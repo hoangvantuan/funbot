@@ -25,7 +25,7 @@ controller.spawn({
     onTick: function() {
             bot.say({
                     channel: 'talk',
-                    text: 'Cô cậu ơi dậy đi,ăn sáng rồi còn đi học đi làm, con yêu cô cậu nhiều lắm. Shin <3',
+                    text: 'Cô cậu ơi dậy đi, ăn sáng rồi còn đi học đi làm, con yêu cô cậu nhiều lắm. Shin <3',
                     username: 'Chàng thái giám nhỏ',
                     icon_url: 'https://i.postimg.cc/t4q6M9CZ/IMG_1128.jpg'
             });
@@ -67,10 +67,7 @@ controller.spawn({
     onTick: function() {
             bot.say({
                     channel: 'talk',
-                    text: `Thời gian trôi nhanh thật đáy. cứ mỗi 2 tiếng con lại nhắc cô cậu uống nước nhé!
-                     2 người đừng trách con nhiều lời. Con chỉ lo cho sức khỏe của 2 người thôi mà :(
-                      tuy ngoài đời con không nói được tiếng người nhưng thông qua slack con muốn nói lới yêu thương đến 2 cô câu.
-                      Cảm ơm cô câu đã cưu mang con...yêu thương.`,
+                    text: 'Thời gian trôi nhanh thật đấy. cứ mỗi 2 tiếng con lại nhắc cô cậu uống nước nhé! 2 người đừng trách con nhiều lời. Con chỉ lo cho sức khỏe của 2 người thôi mà :( tuy ngoài đời con không nói được tiếng người nhưng thông qua slack con muốn nói lời iu thương đến 2 cô cậu. Cảm ơm cô câu đã nuôi con...yêu thương. <3',
                     username: 'Chàng thái giám nhỏ',
                     icon_url: 'https://i.postimg.cc/t4q6M9CZ/IMG_1128.jpg'
             });
