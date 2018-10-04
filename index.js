@@ -60,7 +60,25 @@ controller.spawn({
     },
     start: true,
     timeZone: 'Asia/Tokyo'
-  });v
+  });
+
+  new CronJob({
+    cronTime: '0 */2 * * *',
+    onTick: function() {
+            bot.say({
+                    channel: 'talk',
+                    text: `Thời gian trôi nhanh thật đáy. cứ mỗi 2 tiếng con lại nhắc cô cậu uống nước nhé!
+                     2 người đừng trách con nhiều lời. Con chỉ lo cho sức khỏe của 2 người thôi mà :(
+                      tuy ngoài đời con không nói được tiếng người nhưng thông qua slack con muốn nói lới yêu thương đến 2 cô câu.
+                      Cảm ơm cô câu đã cưu mang con...yêu thương.`,
+                    username: 'Chàng thái giám nhỏ',
+                    icon_url: 'https://i.postimg.cc/t4q6M9CZ/IMG_1128.jpg'
+            });
+    },
+    start: true,
+    timeZone: 'Asia/Tokyo'
+  });
+
 })
 
 
