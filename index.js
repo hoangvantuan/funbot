@@ -37,7 +37,9 @@ controller.hears(
     ['direct_message', 'direct_mention', 'mention'],
     function(bot, message) {
       controller.storage.users.get(message.user, function(err, user) {
-        simsimi.listen('Hello', function(err, msg){
+          console.log(message);
+          
+        simsimi.listen(message.text, function(err, msg){
             if(err) return console.error(err);
             console.log("Message" + msg);
             
