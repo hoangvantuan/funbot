@@ -26,7 +26,7 @@ controller.spawn({
             bot.say({
                     channel: 'talk',
                     text: 'Cô cậu ơi dậy đi, ăn sáng rồi còn đi học đi làm, con yêu cô cậu nhiều lắm. Shin <3',
-                    username: 'Chàng thái giám nhỏ',
+                    username: 'shin đáng yêu <3',
                     icon_url: 'https://i.postimg.cc/t4q6M9CZ/IMG_1128.jpg'
             });
     },
@@ -40,7 +40,7 @@ controller.spawn({
             bot.say({
                     channel: 'talk',
                     text: 'Cô cậu nhớ uống nước đầy đủ nhé ! một ngày phải 2 lít không con buồn đấy :( thương cô cậu nhiều lắm...',
-                    username: 'Chàng thái giám nhỏ',
+                    username: 'shin đáng yêu <3',
                     icon_url: 'https://i.postimg.cc/t4q6M9CZ/IMG_1128.jpg'
             });
     },
@@ -54,7 +54,7 @@ controller.spawn({
             bot.say({
                     channel: 'talk',
                     text: 'Muộn rồi mình cùng đi ngủ thôi ạ. Con buồn ngủ lắm rồi :(',
-                    username: 'Chàng thái giám nhỏ',
+                    username: 'shin đáng yêu <3',
                     icon_url: 'https://i.postimg.cc/t4q6M9CZ/IMG_1128.jpg'
             });
     },
@@ -63,12 +63,12 @@ controller.spawn({
   });
 
   new CronJob({
-    cronTime: '0 */2 * * *',
+    cronTime: '0 10-23/2 * * *',
     onTick: function() {
             bot.say({
                     channel: 'talk',
                     text: 'Thời gian trôi nhanh thật đấy. cứ mỗi 2 tiếng con lại nhắc cô cậu uống nước nhé! 2 người đừng trách con nhiều lời. Con chỉ lo cho sức khỏe của 2 người thôi mà :( tuy ngoài đời con không nói được tiếng người nhưng thông qua slack con muốn nói lời iu thương đến 2 cô cậu. Cảm ơm cô câu đã nuôi con...yêu thương. <3',
-                    username: 'Chàng thái giám nhỏ',
+                    username: 'shin đáng yêu <3',
                     icon_url: 'https://i.postimg.cc/t4q6M9CZ/IMG_1128.jpg'
             });
     },
