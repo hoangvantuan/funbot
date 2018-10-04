@@ -90,7 +90,7 @@ controller.hears(
     function(bot, message) {
       bot.api.users.info({user: message.user}, (error, response) => {
         let {display_name} = response.user.profile;
-        bot.reply(message, 'dạ con chào cô/cậu' + display_name + ' con tên là shin ạ!')
+        bot.reply(message, 'dạ con chào cô/cậu ' + display_name + ' con tên là shin ạ!')
     })
   })
 
