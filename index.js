@@ -79,7 +79,15 @@ controller.spawn({
 })
 
 
-
+controller.hears(
+  ['Con tên gì thế?', 'chào con'],
+  ['direct_message', 'direct_mention', 'mention', 'ambient'],
+  function(bot, message) {
+    bot.api.users.info({user: message.user}, (error, response) => {
+      let {display_name} = response.user.profile;
+      bot.reply(message, 'dạ con chào cô/cậu ' + display_name + ' con tên là shin ạ!')
+  })
+})
 
 controller.hears(
     ['Con tên gì thế?', 'chào con'],
@@ -87,7 +95,12 @@ controller.hears(
     function(bot, message) {
       bot.api.users.info({user: message.user}, (error, response) => {
         let {display_name} = response.user.profile;
-        bot.reply(message, 'dạ con chào cô/cậu ' + display_name + ' con tên là shin ạ!')
+
+        if(display_name == 'shun') {
+          bot.reply(message, 'dạ con chào cậu ' + display_name + ' con tên là shin ạ!')
+        } else {
+          bot.reply(message, 'dạ con chào cô ' + display_name + ' con tên là shin ạ!')
+        }
     })
   })
 
@@ -104,8 +117,21 @@ controller.hears(
     ['direct_message', 'direct_mention', 'mention'],
     function(bot, message) {
       controller.storage.users.get(message.user, function(err, user) {
-          console.log(message);
-          
+          console.log(message);          
+        simsimi.listen(message.text, function(err, msg){
+            if(err) return console.error(err);
+            console.log("Message" + msg);
+            
+            bot.reply(message, msg)
+          });
+      })
+  })
+
+  controller.hears('(.*)shin(.*)',
+    ['ambient'],
+    function(bot, message) {
+      controller.storage.users.get(message.user, function(err, user) {
+          console.log(message);    
         simsimi.listen(message.text, function(err, msg){
             if(err) return console.error(err);
             console.log("Message" + msg);
