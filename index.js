@@ -1,18 +1,21 @@
-var Botkit = require('botkit')
-var Simsimi = require('simsimi');
-var CronJob = require('cron').CronJob;
+const Botkit = require('botkit')
+const Simsimi = require('simsimi');
+const config = require('config')
 
 
 var controller = Botkit.slackbot({
   debug: true
 })
 
+
+
 var simsimi = new Simsimi({
-    key: '36b5b9b4-8a1f-464c-af58-d992839bdf2c'
+    key: config.SIMI_TOKEN,
+    ft: config.SIMI_FILTER
   });
 
 controller.spawn({
-  token: 'xoxb-446522500256-448211776768-Y7JaSJcYTgTkeFOlcBqvdOYH',
+  token: config.SLACK_TOKEN,
 }).startRTM(function(err, bot, payload) {
 
   // 初期処理

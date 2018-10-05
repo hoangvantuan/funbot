@@ -17,8 +17,9 @@
   },
   "homepage": "https://github.com/mdshun/funbot#readme",
   "dependencies": {
+    "axios": "^0.18.0",
     "botkit": "^0.6.16",
-    "cron": "^1.4.1",
+    "cron-job-manager": "^2.1.1",
     "simsimi": "^2.0.2"
   }
 }
