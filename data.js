@@ -7,10 +7,15 @@ const sheet = "1a8fEdXoXmeUgMwYjvBR4cWcVPdE5gFgD1JnegArIKJ8"
 const reminder = 'reminder!A1:Y500'
 const ngontinh = 'ngontinh!A1:Y500'
 
+const cron = new Cron()  
+
 module.exports.updateAll = (bot) => {
   gas(update, bot)
 }
 
+module.exports.list = () => {
+    cron.listJobs()
+}
 
 /**
  * Prints the names and majors of students in a sample spreadsheet:
@@ -18,9 +23,10 @@ module.exports.updateAll = (bot) => {
  * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
  */
 function update(auth, bot) {
-  const cron = new Cron(bot)  
+  cron.bot = bot
+
   cron.deleteAll()
-  
+
   // reminder
   const sheets = google.sheets({ version: 'v4', auth });
   sheets.spreadsheets.values.get({

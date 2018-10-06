@@ -5,7 +5,7 @@ const data = require('./data')
 
 
 var controller = Botkit.slackbot({
-  debug: true
+  debug: false
 })
 
 var simsimi = new Simsimi({
@@ -31,6 +31,13 @@ controller.hears(
   ['direct_message'],
   function (bot, message) {
     data.updateAll(bot)
+  })
+
+controller.hears(
+  ['list'],
+  ['direct_message'],
+  function (bot, message) {
+    data.list()
   })
 
 controller.hears(

@@ -1,10 +1,9 @@
 const CronManager = require('cron-job-manager')
 
-function Cron(bot) {    
+function Cron() {    
     if (!(this instanceof Cron))
-        return new Cron(bot)
+        return new Cron()
     this.manager = new CronManager()
-    this.bot = bot
     return this
 }
 
@@ -76,12 +75,24 @@ Cron.prototype.deleteAll = function() {
     jobs = this.manager.jobs
 
     for (key in jobs) {
+        console.log("key" , key);
+        
         this.manager.deleteJob(key)
     }
 
     this.bot.say({
         channel: 'log',
         text: "Done delete jobs cron list...",
+        username: 'logger',
+        icon_url: 'https://cdn2.iconfinder.com/data/icons/security-2-1/512/debugger-512.png'
+    });
+}
+
+Cron.prototype.listJobs = function() {
+    jobs = this.manager.listCrons()
+    this.bot.say({
+        channel: 'log',
+        text: `List job\n${jobs}`,
         username: 'logger',
         icon_url: 'https://cdn2.iconfinder.com/data/icons/security-2-1/512/debugger-512.png'
     });
