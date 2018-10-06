@@ -21,7 +21,7 @@ controller.spawn({
   if (err) {
     throw new Error('Could not connect to Slack');
   }
-
+  
   data.updateAll(bot)
 
 })

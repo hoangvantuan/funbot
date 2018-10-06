@@ -1,18 +1,18 @@
 const CronManager = require('cron-job-manager')
 
-function Cron() {    
+function Cron() {
     if (!(this instanceof Cron))
         return new Cron()
     this.manager = new CronManager()
     return this
 }
 
-Cron.prototype.addAndStart = function(values, type) {
+Cron.prototype.addAndStart = function (values, type) {
 
 
     this.bot.say({
         channel: 'log',
-        text: "Staring updating jobs cron list type " + type ,
+        text: "Staring updating jobs cron list type " + type,
         username: 'logger',
         icon_url: 'https://cdn2.iconfinder.com/data/icons/security-2-1/512/debugger-512.png'
     });
@@ -38,14 +38,22 @@ Cron.prototype.addAndStart = function(values, type) {
 
     } else if (type == 'ngontinh') {
         this.manager.add(
-            
+
             values[0].key,
             values[0].time,
             () => {
                 const index = getRandomInt(values.length - 1)
                 this.bot.say({
                     channel: values[0].to,
-                    text: `${values[index].content}\n${values[index].image}`,
+                    attachments: [
+                        {
+                            pretext: values[index].content,
+                            fields: [
+                            ],
+                            image_url: values[index].image,
+                            thumb_url: values[index].image
+                        }
+                    ],
                     username: values[0].username,
                     icon_url: values[0].icon
                 });
@@ -63,7 +71,7 @@ Cron.prototype.addAndStart = function(values, type) {
     });
 }
 
-Cron.prototype.deleteAll = function() {
+Cron.prototype.deleteAll = function () {
 
     this.bot.say({
         channel: 'log',
@@ -75,8 +83,8 @@ Cron.prototype.deleteAll = function() {
     jobs = this.manager.jobs
 
     for (key in jobs) {
-        console.log("key" , key);
-        
+        console.log("key", key);
+
         this.manager.deleteJob(key)
     }
 
@@ -88,7 +96,7 @@ Cron.prototype.deleteAll = function() {
     });
 }
 
-Cron.prototype.listJobs = function() {
+Cron.prototype.listJobs = function () {
     jobs = this.manager.listCrons()
     this.bot.say({
         channel: 'log',
