@@ -71,25 +71,19 @@ controller.hears('',
   ['direct_message', 'direct_mention', 'mention'],
   function (bot, message) {
     controller.storage.users.get(message.user, function (err, user) {
-      console.log(message);
       simsimi.listen(message.text, function (err, msg) {
         if (err) return console.error(err);
-        console.log("Message" + msg);
-
         bot.reply(message, msg)
       });
     })
   })
 
-controller.hears('(.*)s(.*)',
+controller.hears('(.*)sim(.*)',
   ['ambient'],
   function (bot, message) {
     controller.storage.users.get(message.user, function (err, user) {
-      console.log(message);
       simsimi.listen(message.text, function (err, msg) {
         if (err) return console.error(err);
-        console.log("Message" + msg);
-
         bot.reply(message, msg)
       });
     })
