@@ -1,5 +1,94 @@
-const Cron = require('cron-job-manager')
+const CronManager = require('cron-job-manager')
 
-// NOTE: user runtime enviroment timzone
-manager = new Cron();
+function Cron(bot) {    
+    if (!(this instanceof Cron))
+        return new Cron(bot)
+    this.manager = new CronManager()
+    this.bot = bot
+    return this
+}
 
+Cron.prototype.addAndStart = function(values, type) {
+
+
+    this.bot.say({
+        channel: 'log',
+        text: "Staring updating jobs cron list type " + type ,
+        username: 'logger',
+        icon_url: 'https://cdn2.iconfinder.com/data/icons/security-2-1/512/debugger-512.png'
+    });
+
+    if (type == 'reminder') {
+        values.map((val, i) => {
+            this.manager.add(
+                val.key,
+                val.time,
+                () => {
+                    this.bot.say({
+                        channel: val.to,
+                        text: val.content,
+                        username: val.username,
+                        icon_url: val.icon
+                    });
+                }
+            )
+
+            this.manager.start(val.key)
+        })
+
+
+    } else if (type == 'ngontinh') {
+        this.manager.add(
+            
+            values[0].key,
+            values[0].time,
+            () => {
+                const index = getRandomInt(values.length - 1)
+                this.bot.say({
+                    channel: values[0].to,
+                    text: `${values[index].content}\n${values[index].image}`,
+                    username: values[0].username,
+                    icon_url: values[0].icon
+                });
+            }
+        )
+
+        this.manager.start(values[0].key)
+    }
+
+    this.bot.say({
+        channel: 'log',
+        text: "Done updated jobs cron list type " + type,
+        username: 'logger',
+        icon_url: 'https://cdn2.iconfinder.com/data/icons/security-2-1/512/debugger-512.png'
+    });
+}
+
+Cron.prototype.deleteAll = function() {
+
+    this.bot.say({
+        channel: 'log',
+        text: "Done delete jobs cron list...",
+        username: 'logger',
+        icon_url: 'https://cdn2.iconfinder.com/data/icons/security-2-1/512/debugger-512.png'
+    });
+
+    jobs = this.manager.jobs
+
+    for (key in jobs) {
+        this.manager.deleteJob(key)
+    }
+
+    this.bot.say({
+        channel: 'log',
+        text: "Done delete jobs cron list...",
+        username: 'logger',
+        icon_url: 'https://cdn2.iconfinder.com/data/icons/security-2-1/512/debugger-512.png'
+    });
+}
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
+
+module.exports = Cron

@@ -20,6 +20,7 @@
     "axios": "^0.18.0",
     "botkit": "^0.6.16",
     "cron-job-manager": "^2.1.1",
+    "googleapis": "^27.0.0",
     "simsimi": "^2.0.2"
   }
 }
