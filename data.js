@@ -4,9 +4,6 @@ const Cron = require('./cron')
 
 const sheet = "1a8fEdXoXmeUgMwYjvBR4cWcVPdE5gFgD1JnegArIKJ8"
 
-const reminder = 'reminder!A1:Y500'
-const ngontinh = 'ngontinh!A1:Y500'
-
 const cron = new Cron() 
 
 module.exports.updateAll = (bot) => {
@@ -38,6 +35,8 @@ function update(auth, bot) {
     })
 
     sheetArray.forEach(val => {
+      console.log(val);
+      
       createJob(sheets, val)
     })
   })
@@ -58,11 +57,11 @@ function createJob(sheets, sheetName) {
 
     results = convertToObject(rows)
     
-    if(sheetName.contains("reminder")) {
+    if(sheetName.includes("reminder")) {
       cron.addAndStart(results, 'reminder')
     }
 
-    if(sheetName.contains("random")) {
+    if(sheetName.includes("random")) {
       cron.addAndStart(results, 'random')
     }
   });
