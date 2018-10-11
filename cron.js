@@ -36,7 +36,7 @@ Cron.prototype.addAndStart = function (values, type) {
         })
 
 
-    } else if (type == 'ngontinh') {
+    } else if (type == 'random') {
         this.manager.add(
 
             values[0].key,

@@ -7,7 +7,7 @@ const sheet = "1a8fEdXoXmeUgMwYjvBR4cWcVPdE5gFgD1JnegArIKJ8"
 const reminder = 'reminder!A1:Y500'
 const ngontinh = 'ngontinh!A1:Y500'
 
-const cron = new Cron()  
+const cron = new Cron() 
 
 module.exports.updateAll = (bot) => {
   gas(update, bot)
@@ -29,37 +29,42 @@ function update(auth, bot) {
 
   // reminder
   const sheets = google.sheets({ version: 'v4', auth });
+
+  sheets.spreadsheets.get({
+    spreadsheetId: sheet,
+  }, (err, res) => {
+   const  sheetArray = res.data.sheets.map(value => {
+      return value.properties.title
+    })
+
+    sheetArray.forEach(val => {
+      createJob(sheets, val)
+    })
+  })
+}
+
+function createJob(sheets, sheetName) {
   sheets.spreadsheets.values.get({
     spreadsheetId: sheet,
-    range: reminder,
+    range: sheetName + "!A1:Y10000",
   }, (err, res) => {
     if (err) {
       console.log("ok", err);
       console.log('The API returned an error: ' + err);
       return
     }
+    
     const rows = res.data.values;
 
     results = convertToObject(rows)
-
-    cron.addAndStart(results, 'reminder')
-  });
-
-  // ngon tinh
-  sheets.spreadsheets.values.get({
-    spreadsheetId: sheet,
-    range: ngontinh,
-  }, (err, res) => {
-    if (err) {
-      console.log("ok", err);
-      console.log('The API returned an error: ' + err);
-      return
+    
+    if(sheetName.contains("reminder")) {
+      cron.addAndStart(results, 'reminder')
     }
-    const rows = res.data.values;
 
-    results = convertToObject(rows)
-
-    cron.addAndStart(results, 'ngontinh')
+    if(sheetName.contains("random")) {
+      cron.addAndStart(results, 'random')
+    }
   });
 }
 
