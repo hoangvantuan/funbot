@@ -1,17 +1,58 @@
+const { google } = require('googleapis')
 const gas = require('./authen-google-api')
-const { google } = require('googleapis');
 const Cron = require('./cron')
 
-const sheet = "1a8fEdXoXmeUgMwYjvBR4cWcVPdE5gFgD1JnegArIKJ8"
+const sheet = '1a8fEdXoXmeUgMwYjvBR4cWcVPdE5gFgD1JnegArIKJ8'
 
-const cron = new Cron() 
+const cron = new Cron()
 
-module.exports.updateAll = (bot) => {
-  gas(update, bot)
+function convertToObject(rows) {
+    const results = []
+
+    if (rows == null || rows.length === 0) {
+        return []
+    }
+
+    const headers = rows[0]
+
+    rows.map((values, index) => {
+        if (index !== 0) {
+            results[index - 1] = {}
+            headers.map((value, i) => {
+                results[index - 1][value] = values[i]
+            })
+        }
+    })
+
+    return results
 }
 
-module.exports.list = () => {
-    cron.listJobs()
+function createJob(sheets, sheetName) {
+    sheets.spreadsheets.values.get(
+        {
+            spreadsheetId: sheet,
+            range: `${sheetName}!A1:Y10000`,
+        },
+        (err, res) => {
+            if (err) {
+                console.log('ok', err)
+                console.log(`The API returned an error: ${err}`)
+                return
+            }
+
+            const rows = res.data.values
+
+            const results = convertToObject(rows)
+
+            if (sheetName.includes('reminder')) {
+                cron.addAndStart(results, 'reminder')
+            }
+
+            if (sheetName.includes('random')) {
+                cron.addAndStart(results, 'random')
+            }
+        },
+    )
 }
 
 /**
@@ -20,71 +61,35 @@ module.exports.list = () => {
  * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
  */
 function update(auth, bot) {
-  cron.bot = bot
+    cron.bot = bot
 
-  cron.deleteAll()
+    cron.deleteAll()
 
-  // reminder
-  const sheets = google.sheets({ version: 'v4', auth });
+    // reminder
+    const sheets = google.sheets({ version: 'v4', auth })
 
-  sheets.spreadsheets.get({
-    spreadsheetId: sheet,
-  }, (err, res) => {
-   const  sheetArray = res.data.sheets.map(value => {
-      return value.properties.title
-    })
+    sheets.spreadsheets.get(
+        {
+            spreadsheetId: sheet,
+        },
+        (err, res) => {
+            const sheetArray = res.data.sheets.map(value => {
+                return value.properties.title
+            })
 
-    sheetArray.forEach(val => {
-      console.log(val);
-      
-      createJob(sheets, val)
-    })
-  })
+            sheetArray.forEach(val => {
+                console.log(val)
+
+                createJob(sheets, val)
+            })
+        },
+    )
 }
 
-function createJob(sheets, sheetName) {
-  sheets.spreadsheets.values.get({
-    spreadsheetId: sheet,
-    range: sheetName + "!A1:Y10000",
-  }, (err, res) => {
-    if (err) {
-      console.log("ok", err);
-      console.log('The API returned an error: ' + err);
-      return
-    }
-    
-    const rows = res.data.values;
-
-    results = convertToObject(rows)
-    
-    if(sheetName.includes("reminder")) {
-      cron.addAndStart(results, 'reminder')
-    }
-
-    if(sheetName.includes("random")) {
-      cron.addAndStart(results, 'random')
-    }
-  });
+module.exports.updateAll = bot => {
+    gas(update, bot)
 }
 
-function convertToObject(rows) {
-  results = []
-
-  if (rows == null || rows.length == 0) {
-    return []
-  }
-
-  const headers = rows[0]
-
-  rows.map((values, index) => {
-    if (index != 0) {
-
-      results[index - 1] = {}
-      headers.map((value, i) => {
-        results[index - 1][value] = values[i]
-      })
-    }
-  })
-
-  return results
+module.exports.list = () => {
+    cron.listJobs()
 }
