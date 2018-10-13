@@ -3,3 +3,5 @@
 
 *.pem
 *.env
+
+config.env

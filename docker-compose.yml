@@ -1,14 +1,40 @@
 version: "3"
 services:
-  mongodb:
+  db:
     restart: always
-    image: mongo:latest
-    environment:
-      - MONGO_DATA_DIR=/data/db
-      - MONGO_LOG_DIR=/dev/null
-      - MONGO_INITDB_ROOT_USERNAME:root
-      - MONGO_INITDB_ROOT_PASSWORD:secret
+    image: mongo:4
+    volumes: 
+      - funbot-db:/data/db
+    networks: 
+      - funbot-nw
+    env_file:
+      - ./config.env
     ports:
       - 27017:27017
     command:
       - mongod
+  bot:
+    build: ./bot
+    networks: 
+      - funbot-nw
+    env_file:
+      - ./config.env
+    depends_on:
+      - db
+      - dbapi
+  dbapi:
+    build: ./dbapi
+    networks: 
+      - funbot-nw
+    env_file:
+      - ./config.env
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+  
+networks:
+  funbot-nw:
+  
+volumes:
+  funbot-db:

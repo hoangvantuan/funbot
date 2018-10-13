@@ -1,0 +1,15 @@
+{
+    "extends": ["airbnb-base"],
+    "rules": {
+            "semi": ["error", "never"],
+            "indent": [ 2, 4, { "SwitchCase": 1 } ],
+            "arrow-parens": [0, "as-needed"],
+            "arrow-body-style": [0, "always"],
+            "global-require": 0,
+            "import/no-dynamic-require": 0,
+            "space-before-function-paren": 0,
+            "func-names": 0,
+            "consistent-return": 0,
+            "no-console":"warn"
+    }
+  }

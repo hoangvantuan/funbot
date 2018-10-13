@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "forever index.js"
   },
   "repository": {
     "type": "git",
@@ -20,8 +21,8 @@
     "axios": "^0.18.0",
     "botkit": "^0.6.16",
     "cron-job-manager": "^2.1.1",
-    "dotenv": "^6.1.0",
+    "forever": "^0.15.3",
     "googleapis": "^27.0.0",
-    "simsimi": "^2.0.2"
+    "jslint": "^0.12.0"
   }
 }

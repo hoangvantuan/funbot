@@ -8,7 +8,7 @@ const TOKEN_PATH = 'token.json';
 
 
 // Excute
-module.exports = (callback, bot) => {    
+module.exports = (callback, bot) => {
     // Load client secrets from a local file.
     return new Promise((resolve, reject) => {
         fs.readFile('credentials.json', (err, content) => {        
