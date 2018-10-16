@@ -1,31 +1,10 @@
 const { google } = require('googleapis')
 const gas = require('./authen-google-api')
-const Cron = require('./cron')
+const Cron = require('../cron')
 
 const sheet = '1a8fEdXoXmeUgMwYjvBR4cWcVPdE5gFgD1JnegArIKJ8'
 
 const cron = new Cron()
-
-function convertToObject(rows) {
-    const results = []
-
-    if (rows == null || rows.length === 0) {
-        return []
-    }
-
-    const headers = rows[0]
-
-    rows.map((values, index) => {
-        if (index !== 0) {
-            results[index - 1] = {}
-            headers.map((value, i) => {
-                results[index - 1][value] = values[i]
-            })
-        }
-    })
-
-    return results
-}
 
 function createJob(sheets, sheetName) {
     sheets.spreadsheets.values.get(
