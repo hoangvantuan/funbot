@@ -7,4 +7,6 @@ WORKDIR /usr/src/app
 COPY src/ .
 RUN npm install
 
+EXPOSE 27017
+
 CMD [ "npm", "start" ]
