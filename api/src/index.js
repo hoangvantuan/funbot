@@ -1,6 +1,10 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 
+if(process.env.VERSION !== "v1") {
+    require('dotenv').config({ path: '../../config.env' })
+}
+
 const api = express()
 
 api.use(bodyParser.urlencoded({ extended: true }))
