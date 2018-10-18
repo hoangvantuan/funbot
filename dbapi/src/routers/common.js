@@ -14,6 +14,8 @@ Common.prototype.use = function(router) {
         const team = new db[this.name](req.body)
 
         team.save((err, result) => {
+            console.log(err);
+
             if (err) return res.status(406).send(JSON.stringify({ err }))
 
             res.send(JSON.stringify(result))

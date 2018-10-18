@@ -19,6 +19,6 @@ api.use((req, res, next) => {
     next(err)
 })
 
-const server = api.listen(process.env.DB_PORT || 8081, () => {
+const server = api.listen(process.env.DBAPI_PORT || 8081, () => {
     console.log(`Listening on port ' ${server.address().port}`)
 })

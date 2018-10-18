@@ -10,7 +10,15 @@ const SlackTeam = new Schema(
             required: true,
             unique: true,
         },
+        user_id: {
+            type: String,
+            required: true
+        },
         team_name: {
+            type: String,
+            required: true,
+        },
+        scope: {
             type: String,
             required: true,
         },
@@ -21,9 +29,16 @@ const SlackTeam = new Schema(
         },
         refresh_token: {
             type: String,
-            required: true,
             unique: true,
         },
+        bot: {
+            bot_user_id: {
+                type: String
+            },
+            bot_access_token: {
+                type: String
+            }
+        }
     },
     {
         timestamps: {
