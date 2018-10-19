@@ -1,5 +1,4 @@
 const { google } = require('googleapis')
-const gas = require('./authen-google-api')
 const Cron = require('../cron')
 
 const sheet = '1a8fEdXoXmeUgMwYjvBR4cWcVPdE5gFgD1JnegArIKJ8'

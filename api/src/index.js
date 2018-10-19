@@ -1,12 +1,11 @@
-const log = require('log4js').getLogger()
 const express = require('express')
 const bodyParser = require('body-parser')
+
+const log = require('./log')
 
 if (!process.env.VERSION) {
     require('dotenv').config({ path: '../../.env' })
 }
-
-log.level = 'debug'
 
 const api = express()
 

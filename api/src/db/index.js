@@ -1,29 +1,25 @@
-const axios = require('axios')
+const Connnecter = require('./connector')
 
-const DBAPI_HOST = process.env.DBAPI_HOST
-const DBAPI_PORT = process.env.DBAPI_PORT
-const dbapiURL = `${DBAPI_HOST}:${DBAPI_PORT}`
+const { DBAPI_HOST } = process.env
+const { DBAPI_PORT } = process.env
+const baseURL = `${DBAPI_HOST}:${DBAPI_PORT}`
 
-class DB {
-    static Save(path, data) {
-        const url = `${dbapiURL}/${path}/post`        
-        return axios.post(url, data)
-    }
+module.exports.SlackTeam = new Connnecter(
+    baseURL,
+    `/api/${process.env.VERSION}/slack/team`,
+)
 
-    static Get(path, data) {
-        const url = `${dbapiURL}/${path}/get`        
-        return axios.post(url, data)
-    }
+module.exports.SlackToken = new Connnecter(
+    baseURL,
+    `/api/${process.env.VERSION}/slack/token`,
+)
 
-    static Update(path, data) {
-        const url = `${dbapiURL}/${path}/update`        
-        return axios.post(url, data)
-    }
+module.exports.SlackUser = new Connnecter(
+    baseURL,
+    `/api/${process.env.VERSION}/slack/user`,
+)
 
-    static Delete(path, data) {
-        const url = `${dbapiURL}/${path}/delete`        
-        return axios.post(url, data)
-    }
-}
-
-module.exports = DB
+module.exports.SlackTeam = new Connnecter(
+    baseURL,
+    `/api/${process.env.VERSION}/google/token`,
+)

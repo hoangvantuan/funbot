@@ -19,7 +19,7 @@ class SlackAuth {
         const options = {
             client_id: clientID,
             client_secret: clientSecret,
-            code: code
+            code,
         }
 
         return axios.post(tokenURL, qs.stringify(options))
