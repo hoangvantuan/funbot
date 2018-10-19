@@ -16,44 +16,39 @@ router.get('/slack/url', (req, res) => {
     res.redirect(SlackAuth.getURL())
 })
 
-router.get('/slack/redirected', (req, res) => {
+router.get('/slack/redirected', async (req, res) => {
     const { query } = req
 
     if (!query.code) {
         res.send('code is invalid')
     }
 
-    SlackAuth.getToken(query.code)
-        .then(response => {
-            db.SlackTeam.get({ team_id: response.data.team_id })
-                .then(dbres => {
-                    if (dbres.data.length) {
-                        res.send('App was installed')
-                    } else {
-                        db.SlackTeam.save(response.data)
-                            .then(() => {
-                                // TODO: redirect to slack app
-                                res.send('Install app success')
-                            })
-                            .catch(err => {
-                                log.debug(err)
-                                res.send('error')
-                            })
-                            .catch(err => {
-                                log.debug(err)
-                                res.send('error')
-                            })
-                    }
+    try {
+        const tokens = await SlackAuth.getToken(query.code)
+
+        if (tokens && tokens.data) {
+            const team = await db.SlackTeam.get({
+                team_id: tokens.data.team_id,
+            })
+
+            if (team.data.data.length > 0) {
+                const result = await db.SlackTeam.update({
+                    query: `{"team_id": "${tokens.data.team_id}"}`,
+                    value: JSON.stringify(tokens.data),
                 })
-                .catch(err => {
-                    log.debug(err)
-                    res.send('error')
-                })
-        })
-        .catch(err => {
-            log.debug(err)
-            res.send('error')
-        })
+
+                log.debug(result.data)
+                res.send('App was reinstalled')
+            } else {
+                const result = await db.SlackTeam.save(tokens.data)
+                log.debug(result.data)
+                res.send('App was installed')
+            }
+        }
+    } catch (err) {
+        log.debug(err.response.data)
+        res.status(404).send('not found')
+    }
 })
 
 module.exports = router

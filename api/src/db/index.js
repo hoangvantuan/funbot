@@ -19,7 +19,7 @@ module.exports.SlackUser = new Connnecter(
     `/api/${process.env.VERSION}/slack/user`,
 )
 
-module.exports.SlackTeam = new Connnecter(
+module.exports.GoogleTeam = new Connnecter(
     baseURL,
     `/api/${process.env.VERSION}/google/token`,
 )

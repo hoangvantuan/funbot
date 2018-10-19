@@ -2,7 +2,7 @@ const axios = require('axios')
 
 class Connector {
     constructor(basePath, path) {
-        this.url = `${basePath}/${path}`
+        this.url = `${basePath}${path}`
     }
 
     save(data) {

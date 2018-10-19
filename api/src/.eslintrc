@@ -15,7 +15,8 @@
             "array-callback-return": 0,
             "no-use-before-define":0,
             "guard-for-in": 0,
-            "no-restricted-syntax": 0
+            "no-restricted-syntax": 0,
+            "no-return-await": 0,
 
 
     }

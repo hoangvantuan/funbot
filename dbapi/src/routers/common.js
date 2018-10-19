@@ -1,4 +1,13 @@
 const db = require('../models')
+const log = require('../log')
+
+function wrapResult(data, ok) {
+    if (ok) {
+        return { statusText: 'ok', data }
+    }
+
+    return { statusText: 'no ok', data }
+}
 
 function Common(modelname) {
     if (!(this instanceof Common)) {
@@ -14,11 +23,12 @@ Common.prototype.use = function(router) {
         const team = new db[this.name](req.body)
 
         team.save((err, result) => {
-            console.log(err);
-
-            if (err) return res.status(406).send(JSON.stringify({ err }))
-
-            res.send(JSON.stringify(result))
+            if (err) {
+                log.debug(err)
+                res.status(404).send(wrapResult(err))
+            } else {
+                res.send(wrapResult(result, true))
+            }
         })
     })
 
@@ -30,9 +40,12 @@ Common.prototype.use = function(router) {
             JSON.parse(req.body.value),
             { runValidators: true, context: 'query' },
             (err, result) => {
-                if (err) res.status(404).send(JSON.stringify({ err }))
+                if (err) {
+                    log.debug(err)
+                    res.status(404).send(wrapResult(err))
+                }
 
-                res.send(JSON.stringify(result))
+                res.send(wrapResult(result, true))
             },
         )
     })
@@ -41,9 +54,12 @@ Common.prototype.use = function(router) {
         const model = db[this.name]
 
         model.find(req.body, (err, result) => {
-            if (err) res.status(404).send(JSON.stringify({ err }))
+            if (err) {
+                log.debug(err)
+                res.status(404).send(wrapResult(err))
+            }
 
-            res.send(JSON.stringify(result))
+            res.send(wrapResult(result, true))
         })
     })
 
@@ -51,9 +67,12 @@ Common.prototype.use = function(router) {
         const model = db[this.name]
 
         model.deleteMany(req.body, (err, result) => {
-            if (err) res.status(404).send(JSON.stringify({ err }))
+            if (err) {
+                log.debug(err)
+                res.status(404).send(wrapResult(err))
+            }
 
-            res.send(JSON.stringify(result))
+            res.send(wrapResult(result, true))
         })
     })
 }
