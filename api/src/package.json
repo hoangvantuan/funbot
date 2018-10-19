@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/mdshun/funbot#readme",
   "dependencies": {
+    "aesjs": "^1.0.0",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "botkit": "^0.6.16",

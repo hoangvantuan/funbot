@@ -1,3 +1,5 @@
+const aesjs = require('aes-js');
+
 module.exports.ConvertRowsToObject = (rows) => {
     const results = []
 
@@ -17,4 +19,26 @@ module.exports.ConvertRowsToObject = (rows) => {
     })
 
     return results
+}
+
+module.exports.encode = (val) => {
+    const keyBytes = aesjs.utils.utf8.toBytes(process.env.AES_KEY);
+    const textBytes = aesjs.utils.utf8.toBytes(text);
+    const aes = new aesjs.ModeOfOperation.ctr(
+        keyBytes,
+        new aesjs.Counter(5),
+    );
+
+    return aesjs.utils.hex.fromBytes(aes.encrypt(textBytes));
+}
+
+module.exports.decode = (val) => {
+    const keyBytes = aesjs.utils.utf8.toBytes(process.env.AES_KEY);
+    const textBytes = aesjs.utils.hex.toBytes(text);
+    const aes = new aesjs.ModeOfOperation.ctr(
+        keyBytes,
+        new aesjs.Counter(5),
+    );
+
+    return aesjs.utils.utf8.fromBytes(aes.decrypt(textBytes));
 }
