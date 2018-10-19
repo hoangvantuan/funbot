@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon ./index.js",
+    "dev": "DEBUG=express:* nodemon ./index.js",
     "start": "forever ./index.js"
   },
   "repository": {
@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/mdshun/funbot#readme",
   "dependencies": {
-    "aesjs": "^1.0.0",
+    "aes-js": "^3.1.1",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "botkit": "^0.6.16",

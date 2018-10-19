@@ -1,9 +1,9 @@
-const aesjs = require('aes-js');
+const aesjs = require('aes-js')
 
-module.exports.ConvertRowsToObject = (rows) => {
+module.exports.ConvertRowsToObject = rows => {
     const results = []
 
-    if (!rowss || rows.length === 0) {
+    if (!rows || rows.length === 0) {
         return []
     }
 
@@ -21,24 +21,18 @@ module.exports.ConvertRowsToObject = (rows) => {
     return results
 }
 
-module.exports.encode = (val) => {
-    const keyBytes = aesjs.utils.utf8.toBytes(process.env.AES_KEY);
-    const textBytes = aesjs.utils.utf8.toBytes(text);
-    const aes = new aesjs.ModeOfOperation.ctr(
-        keyBytes,
-        new aesjs.Counter(5),
-    );
+module.exports.Encode = text => {
+    const keyBytes = aesjs.utils.utf8.toBytes(process.env.AES_KEY)
+    const textBytes = aesjs.utils.utf8.toBytes(text)
+    const aes = new aesjs.ModeOfOperation.ctr(keyBytes, new aesjs.Counter(5))
 
-    return aesjs.utils.hex.fromBytes(aes.encrypt(textBytes));
+    return aesjs.utils.hex.fromBytes(aes.encrypt(textBytes))
 }
 
-module.exports.decode = (val) => {
-    const keyBytes = aesjs.utils.utf8.toBytes(process.env.AES_KEY);
-    const textBytes = aesjs.utils.hex.toBytes(text);
-    const aes = new aesjs.ModeOfOperation.ctr(
-        keyBytes,
-        new aesjs.Counter(5),
-    );
+module.exports.Decode = text => {
+    const keyBytes = aesjs.utils.utf8.toBytes(process.env.AES_KEY)
+    const textBytes = aesjs.utils.hex.toBytes(text)
+    const aes = new aesjs.ModeOfOperation.ctr(keyBytes, new aesjs.Counter(5))
 
-    return aesjs.utils.utf8.fromBytes(aes.decrypt(textBytes));
+    return aesjs.utils.utf8.fromBytes(aes.decrypt(textBytes))
 }

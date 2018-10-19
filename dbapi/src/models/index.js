@@ -4,8 +4,8 @@ const mongoose = require('mongoose')
 
 const uri = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${
     process.env.MONGO_INITDB_ROOT_PASSWORD
-}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${
-    process.env.MONGO_DBNAME
+}@${process.env.DB_HOST}:${process.env.BD_PORT}/${
+    process.env.DB_DBNAME
 }?authSource=admin`
 
 mongoose.connect(

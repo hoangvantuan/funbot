@@ -1,7 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 
-if(!process.env.VERSION) {
+if (!process.env.VERSION) {
     require('dotenv').config({ path: '../../.env' })
 }
 
