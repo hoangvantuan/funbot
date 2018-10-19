@@ -1,9 +1,12 @@
+const log = require('log4js').getLogger()
 const express = require('express')
 const bodyParser = require('body-parser')
 
-if(!process.env.VERSION) {
+if (!process.env.VERSION) {
     require('dotenv').config({ path: '../../.env' })
 }
+
+log.level = 'debug'
 
 const api = express()
 
@@ -20,5 +23,5 @@ api.use((req, res, next) => {
 })
 
 const server = api.listen(process.env.API_PORT || 8080, () => {
-    console.log(`Listening on port ' ${server.address().port}`)
+    log.debug(`Listening on port ' ${server.address().port}`)
 })
