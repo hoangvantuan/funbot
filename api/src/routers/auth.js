@@ -31,18 +31,16 @@ router.get('/slack/redirected', async (req, res) => {
                 team_id: tokens.data.team_id,
             })
 
-            if (team.data.data.length > 0) {
-                const result = await db.SlackTeam.update({
+            if (team.data && team.data.data.length > 0) {
+                await db.SlackTeam.update({
                     query: `{"team_id": "${tokens.data.team_id}"}`,
                     value: JSON.stringify(tokens.data),
                 })
 
-                log.debug(result.data)
-                res.send('App was reinstalled')
+                res.redirect('https://slack.com/app_redirect?app=ADHDD3T9P')
             } else {
-                const result = await db.SlackTeam.save(tokens.data)
-                log.debug(result.data)
-                res.send('App was installed')
+                await db.SlackTeam.save(tokens.data)
+                res.redirect('https://slack.com/app_redirect?app=ADHDD3T9P')
             }
         }
     } catch (err) {

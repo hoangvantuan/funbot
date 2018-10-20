@@ -18,6 +18,7 @@ const SlackUser = new Schema(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'GoogleToken',
             },
+        ],
     },
     {
         timestamps: {
