@@ -9,11 +9,6 @@ module.exports.SlackTeam = new Connnecter(
     `/api/${process.env.VERSION}/slack/team`,
 )
 
-module.exports.SlackToken = new Connnecter(
-    baseURL,
-    `/api/${process.env.VERSION}/slack/token`,
-)
-
 module.exports.SlackUser = new Connnecter(
     baseURL,
     `/api/${process.env.VERSION}/slack/user`,

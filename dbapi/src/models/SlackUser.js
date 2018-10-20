@@ -18,13 +18,6 @@ const SlackUser = new Schema(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'GoogleToken',
             },
-        ],
-        slack_tokens: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'SlackToken',
-            },
-        ],
     },
     {
         timestamps: {
