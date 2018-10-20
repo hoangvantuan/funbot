@@ -69,8 +69,17 @@ router.get('/slack/redirected', async (req, res) => {
             }
         }
     } catch (err) {
-        log.debug(err.response.data)
-        res.status(404).send('not found')
+        if (err.response) {
+            log.debug(err.response.data)
+            log.debug(err.response.status)
+            log.debug(err.response.headers)
+        } else if (err.request) {
+            log.debug(err.request)
+        } else {
+            log.debug('unknown error')
+        }
+
+        res.status(400).send('Bad request')
     }
 })
 
