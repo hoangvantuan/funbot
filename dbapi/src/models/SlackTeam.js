@@ -29,7 +29,6 @@ const SlackTeam = new Schema(
         },
         refresh_token: {
             type: String,
-            unique: true,
         },
         bot: {
             bot_user_id: {
