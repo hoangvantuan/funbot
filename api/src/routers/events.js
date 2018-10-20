@@ -5,7 +5,6 @@ const router = express.Router()
 
 router.post('/', (req, res) => {
     res.status(200).end()
-    console.log(req.body)
     if (req.body.challenge) {
         res.send({ challenge: req.body.challenge })
     }

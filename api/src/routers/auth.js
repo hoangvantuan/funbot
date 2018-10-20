@@ -2,6 +2,7 @@ const express = require('express')
 const SlackAuth = require('../auth/slack')
 const db = require('../db')
 const log = require('../log')
+const util = require('../util')
 
 const router = express.Router()
 
@@ -32,6 +33,11 @@ router.get('/slack/redirected', async (req, res) => {
             })
 
             if (team.data && team.data.data.length > 0) {
+                tokens.data.access_token = util.Encode(tokens.data.access_token)
+                tokens.data.bot.bot_access_token = util.Encode(
+                    tokens.data.bot.bot_access_token,
+                )
+
                 await db.SlackTeam.update({
                     query: `{"team_id": "${tokens.data.team_id}"}`,
                     value: JSON.stringify(tokens.data),
