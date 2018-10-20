@@ -5,7 +5,7 @@ const { Schema } = mongoose
 
 const GoogleToken = new Schema(
     {
-        token_scope: {
+        scope: {
             type: String,
             required: true,
         },
@@ -23,7 +23,7 @@ const GoogleToken = new Schema(
             required: true,
             unique: true,
         },
-        expired: {
+        expiry_date: {
             type: Date,
         },
     },

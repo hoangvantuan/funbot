@@ -1,5 +1,6 @@
 const express = require('express')
 const SlackAuth = require('../auth/slack')
+const GoogleAuth = require('../auth/google')
 const db = require('../db')
 const log = require('../log')
 const util = require('../util')
@@ -7,14 +8,31 @@ const util = require('../util')
 const router = express.Router()
 
 router.get('/google/redirected', (req, res) => {
-    log.debug(req.params)
-    log.debug(req.body)
-
-    res.send('ok')
+    if (req.query && req.query.code) {
+        GoogleAuth.getToken(req.query.code).then(tokens => {
+            db.GoogleToken.save(tokens.tokens)
+                .then(result => {
+                    // TODO: send message to slack
+                    res.send(result.data)
+                })
+                .catch(err => {
+                    log.debug(err)
+                    // TODO: use api to send message to slack
+                    res.send('not found')
+                })
+        })
+    } else {
+        // TODO: use api to send message to slack
+        res.send('not found')
+    }
 })
 
 router.get('/slack/url', (req, res) => {
     res.redirect(SlackAuth.getURL())
+})
+
+router.get('/google/url', (req, res) => {
+    res.redirect(GoogleAuth.getURL())
 })
 
 router.get('/slack/redirected', async (req, res) => {
