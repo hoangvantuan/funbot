@@ -4,7 +4,6 @@ const db = require('../db')
 const router = express.Router()
 
 router.post('/', (req, res) => {
-    res.status(200).end()
     if (req.body.challenge) {
         res.send({ challenge: req.body.challenge })
     }
