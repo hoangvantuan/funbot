@@ -1,5 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const https = require('https')
+const fs = require('fs')
 
 const log = require('./log')
 
@@ -21,6 +23,14 @@ api.use((req, res, next) => {
     next(err)
 })
 
-const server = api.listen(process.env.API_PORT || 8080, () => {
-    log.debug(`Listening on port ' ${server.address().port}`)
-})
+const server = https
+    .createServer(
+        {
+            key: fs.readFileSync('../../server.key'),
+            cert: fs.readFileSync('../../server.cert'),
+        },
+        api,
+    )
+    .listen(process.env.API_PORT || 8080, () => {
+        log.debug(`Listening on port ' ${server.address().port}`)
+    })
