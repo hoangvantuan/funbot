@@ -9,20 +9,35 @@ const router = express.Router()
 
 router.get('/google/redirected', (req, res) => {
     if (req.query && req.query.code) {
+        const userID = req.query.state
         GoogleAuth.getToken(req.query.code).then(tokens => {
             db.GoogleToken.save(tokens.tokens)
                 .then(result => {
-                    // TODO: send message to slack
-                    res.send(result.data)
+                    // TODO: multi google tokens
+                    const query = {
+                        query: JSON.stringify({
+                            user_id: userID,
+                        }),
+                        value: JSON.stringify({
+                            google_tokens: [result.data.data._id],
+                        }),
+                    }
+
+                    db.SlackUser.update(query)
+                        .then(result2 => {
+                            res.send('ok ')
+                        })
+                        .catch(err => {
+                            log.debug(err)
+                            res.send('error')
+                        })
                 })
                 .catch(err => {
                     log.debug(err)
-                    // TODO: use api to send message to slack
                     res.send('not found')
                 })
         })
     } else {
-        // TODO: use api to send message to slack
         res.send('not found')
     }
 })

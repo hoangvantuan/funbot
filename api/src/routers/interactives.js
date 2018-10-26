@@ -1,16 +1,21 @@
 const express = require('express')
 const db = require('../db')
+const log = require('../log')
+const bot = require('../bot')
 
 const router = express.Router()
 
-router.post('/', (req, res) => {
-    console.log(req)
+router.post('/', async (req, res) => {
+    log.debug(req.body)
 
-    res.send({
-        replace_original: true,
-        text:
-            'Cám ơn ấy nhé. từ giờ bạn có thể tạo spreasheet để remind rồi :) ',
-    })
+    const payload = JSON.parse(req.body.payload)
+
+    if (payload.callback_id === 'auth_google_spreasheet_cancel') {
+        res.send({
+            replace_original: true,
+            text: 'ok',
+        })
+    }
 })
 
 module.exports = router
