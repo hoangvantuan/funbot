@@ -23,14 +23,6 @@ api.use((req, res, next) => {
     next(err)
 })
 
-const server = https
-    .createServer(
-        {
-            key: fs.readFileSync('../../server.key'),
-            cert: fs.readFileSync('../../server.cert'),
-        },
-        api,
-    )
-    .listen(process.env.API_PORT || 8080, () => {
-        log.debug(`Listening on port ' ${server.address().port}`)
-    })
+const server = api.listen(process.env.API_PORT || 8080, () => {
+    log.debug(`Listening on port ' ${server.address().port}`)
+})
