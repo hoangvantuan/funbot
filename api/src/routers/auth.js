@@ -11,25 +11,38 @@ router.get('/google/redirected', (req, res) => {
     if (req.query && req.query.code) {
         const userID = req.query.state
         GoogleAuth.getToken(req.query.code).then(tokens => {
-            db.GoogleToken.save(tokens.tokens)
-                .then(result => {
-                    // TODO: multi google tokens
-                    const query = {
-                        query: JSON.stringify({
-                            user_id: userID,
-                        }),
-                        value: JSON.stringify({
-                            google_tokens: [result.data.data._id],
-                        }),
+            // remove all old token
+            db.SlackUser.get({ user_id: userID })
+                .then(userRes => {
+                    if (userRes.data.data[0].google_tokens.length > 0) {
+                        const googleTokenID = userRes.data.data[0].google_tokens[0]._id
+                        db.GoogleToken.delete({ _id: googleTokenID })
                     }
 
-                    db.SlackUser.update(query)
-                        .then(result2 => {
-                            res.send('ok ')
+                    // save new token
+                    db.GoogleToken.save(tokens.tokens)
+                        .then(result => {
+                            const query = {
+                                query: JSON.stringify({
+                                    user_id: userID,
+                                }),
+                                value: JSON.stringify({
+                                    google_tokens: [result.data.data._id],
+                                }),
+                            }
+
+                            db.SlackUser.update(query)
+                                .then(() => {
+                                    res.send('ok ')
+                                })
+                                .catch(err => {
+                                    log.debug(err)
+                                    res.send('error')
+                                })
                         })
                         .catch(err => {
                             log.debug(err)
-                            res.send('error')
+                            res.send('not found')
                         })
                 })
                 .catch(err => {

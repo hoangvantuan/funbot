@@ -17,6 +17,7 @@
             "guard-for-in": 0,
             "no-restricted-syntax": 0,
             "no-return-await": 0,
+            "no-underscore-dangle":"off"
 
 
     }
