@@ -1,4 +1,5 @@
 const { google } = require('googleapis')
+const util = require('../util')
 
 const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
@@ -6,11 +7,16 @@ const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_REDIRECT_URI,
 )
 class GoogleAuth {
-    static getURL(userID) {
+    static getURL(userID, responseURL) {
+        const state = {
+            userID,
+            responseURL,
+        }
+
         return oauth2Client.generateAuthUrl({
             access_type: 'offline',
             scope: process.env.GOOGLE_SCOPES,
-            state: userID,
+            state: util.Encode(JSON.stringify(state)),
         })
     }
 

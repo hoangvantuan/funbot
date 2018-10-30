@@ -19,6 +19,11 @@ const SlackUser = new Schema(
                 ref: 'GoogleToken',
             },
         ],
+        sheets: [
+            {
+                type: String,
+            },
+        ],
     },
     {
         timestamps: {

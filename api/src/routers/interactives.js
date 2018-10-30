@@ -1,7 +1,5 @@
 const express = require('express')
-const db = require('../db')
 const log = require('../log')
-const bot = require('../bot')
 
 const router = express.Router()
 
@@ -13,7 +11,7 @@ router.post('/', async (req, res) => {
     if (payload.callback_id === 'auth_google_spreasheet_cancel') {
         res.send({
             replace_original: true,
-            text: 'ok',
+            text: 'Thanks you',
         })
     }
 })

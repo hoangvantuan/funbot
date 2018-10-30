@@ -1,4 +1,5 @@
 const express = require('express')
+const axios = require('axios')
 const SlackAuth = require('../auth/slack')
 const GoogleAuth = require('../auth/google')
 const db = require('../db')
@@ -9,10 +10,18 @@ const router = express.Router()
 
 router.get('/google/redirected', (req, res) => {
     if (req.query && req.query.code) {
-        const userID = req.query.state
+        const state = JSON.parse(util.Decode(req.query.state))
+
+        if (state.responseURL) {
+            axios.post(state.responseURL, {
+                replace_original: true,
+                text: 'Thanks you for give me can access to spreasheet',
+            })
+        }
+
         GoogleAuth.getToken(req.query.code).then(tokens => {
             // remove all old token
-            db.SlackUser.get({ user_id: userID })
+            db.SlackUser.get({ user_id: state.userID })
                 .then(userRes => {
                     if (userRes.data.data[0].google_tokens.length > 0) {
                         const googleTokenID = userRes.data.data[0].google_tokens[0]._id
@@ -24,7 +33,7 @@ router.get('/google/redirected', (req, res) => {
                         .then(result => {
                             const query = {
                                 query: JSON.stringify({
-                                    user_id: userID,
+                                    user_id: state.userID,
                                 }),
                                 value: JSON.stringify({
                                     google_tokens: [result.data.data._id],
