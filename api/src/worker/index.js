@@ -11,22 +11,27 @@ class Worker {
         // clear all current job
         log.debug('delete all job before start')
         cleaAllJob()
+        try {
+            const teamsRes = await db.SlackTeam.get({})
 
-        const teamsRes = await db.SlackTeam.get({})
+            teamsRes.data.data.forEach(async team => {
+                log.debug('create worker for team', team)
+                const usersRes = await db.SlackUser.get({
+                    slack_team: team._id,
+                })
 
-        teamsRes.data.data.forEach(async team => {
-            log.debug('create worker for team', team)
-            const usersRes = await db.SlackUser.get({ slack_team: team._id })
-
-            usersRes.data.data.forEach(user => {
-                log.debug('create worker for user', user)
-                try {
-                    startCronUser(team, user)
-                } catch (err) {
-                    log.debug(err)
-                }
+                usersRes.data.data.forEach(user => {
+                    log.debug('create worker for user', user)
+                    try {
+                        startCronUser(team, user)
+                    } catch (err) {
+                        log.debug(err)
+                    }
+                })
             })
-        })
+        } catch (err) {
+            log.debug(err)
+        }
     }
 }
 
@@ -89,11 +94,11 @@ function createJobFromSheet(sheets, sheetID, sheet) {
             const rows = convertToObject(res.data.values)
 
             if (rows[0].type === 'random') {
-                console.log('random')
+                log.debug('random')
             }
 
             if (rows[0].type === 'normal') {
-                console.log('normal')
+                log.debug('normal')
             }
         },
     )

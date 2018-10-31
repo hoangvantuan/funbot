@@ -18,8 +18,7 @@
             "no-restricted-syntax": 0,
             "no-return-await": 0,
             "no-underscore-dangle":"off",
-            "class-methods-use-this":"off"
-
-
+            "class-methods-use-this":"off",
+            "new-cap":"off"
     }
   }

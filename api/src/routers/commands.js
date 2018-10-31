@@ -46,10 +46,7 @@ router.post('/', async (req, res) => {
                 user_id: req.body.user_id,
             })
 
-            if (
-                userRes.data.statusText === 'ok'
-                && userRes.data.data.length === 1
-            ) {
+            if (userRes.data.statusText === 'ok' && userRes.data.data.length === 1) {
                 // replace old token if had before
                 res.send(askMessage(req.body.user_id, req.body.response_url))
             } else {
@@ -57,10 +54,7 @@ router.post('/', async (req, res) => {
                     team_id: req.body.team_id,
                 })
 
-                if (
-                    teamRes.data.statusText === 'ok'
-                    && teamRes.data.data.length === 1
-                ) {
+                if (teamRes.data.statusText === 'ok' && teamRes.data.data.length === 1) {
                     const team = teamRes.data.data[0]
 
                     const userRes2 = await db.SlackUser.save({
@@ -73,9 +67,7 @@ router.post('/', async (req, res) => {
                         res.send({ text: 'has error' })
                     }
 
-                    res.send(
-                        askMessage(req.body.user_id, req.body.response_url),
-                    )
+                    res.send(askMessage(req.body.user_id, req.body.response_url))
                 } else {
                     log.debug(teamRes.data)
                     res.send({ text: 'has error' })
@@ -88,58 +80,72 @@ router.post('/', async (req, res) => {
     } else if (req.body.text.match('^add.*$')) {
         const args = req.body.text.split(' ')
         if (args[0] === 'add' && args[1]) {
-            // get current sheet
-            const userRes = await db.SlackUser.get({
-                user_id: req.body.user_id,
-            })
-
-            const query = {
-                query: JSON.stringify({
+            try {
+                // get current sheet
+                const userRes = await db.SlackUser.get({
                     user_id: req.body.user_id,
-                }),
-                value: JSON.stringify({
-                    sheets: [...userRes.data.data[0].sheets, args[1]],
-                }),
-            }
-            db.SlackUser.update(query).then(() => {
-                res.send({
-                    text: 'Register sheet successfull',
                 })
-            })
+
+                const query = {
+                    query: JSON.stringify({
+                        user_id: req.body.user_id,
+                    }),
+                    value: JSON.stringify({
+                        sheets: [...userRes.data.data[0].sheets, args[1]],
+                    }),
+                }
+                db.SlackUser.update(query).then(() => {
+                    res.send({
+                        text: 'Register sheet successfull',
+                    })
+                })
+            } catch (err) {
+                log.debug(err)
+                res.send({ text: 'has error' })
+            }
         } else {
             res.send(`not valid command ${req.body.text}`)
         }
     } else if (req.body.text.match('^list$')) {
-        const userRes = await db.SlackUser.get({
-            user_id: req.body.user_id,
-        })
-
-        res.send(JSON.stringify(userRes.data.data[0].sheets), null, 2)
-    } else if (req.body.text.match('^rm.*$')) {
-        const args = req.body.text.split(' ')
-
-        if (args[0] === 'rm' && args[1]) {
+        try {
             const userRes = await db.SlackUser.get({
                 user_id: req.body.user_id,
             })
 
-            const newSheets = userRes.data.data[0].sheets.filter(sheet => {
-                return sheet !== args[1]
-            })
+            res.send(JSON.stringify(userRes.data.data[0].sheets), null, 2)
+        } catch (err) {
+            log.debug(err)
+            res.send({ text: 'has error' })
+        }
+    } else if (req.body.text.match('^rm.*$')) {
+        const args = req.body.text.split(' ')
 
-            const query = {
-                query: JSON.stringify({
+        if (args[0] === 'rm' && args[1]) {
+            try {
+                const userRes = await db.SlackUser.get({
                     user_id: req.body.user_id,
-                }),
-                value: JSON.stringify({
-                    sheets: newSheets,
-                }),
-            }
-            db.SlackUser.update(query).then(() => {
-                res.send({
-                    text: 'delete sheet successfull',
                 })
-            })
+
+                const newSheets = userRes.data.data[0].sheets.filter(sheet => {
+                    return sheet !== args[1]
+                })
+
+                const query = {
+                    query: JSON.stringify({
+                        user_id: req.body.user_id,
+                    }),
+                    value: JSON.stringify({
+                        sheets: newSheets,
+                    }),
+                }
+                db.SlackUser.update(query).then(() => {
+                    res.send({
+                        text: 'delete sheet successfull',
+                    })
+                })
+            } catch (err) {
+                log.debug('has error')
+            }
         } else {
             res.send(`not valid command ${req.body.text}`)
         }

@@ -91,9 +91,7 @@ router.get('/slack/redirected', async (req, res) => {
 
             // encode access token
             tokens.data.access_token = util.Encode(tokens.data.access_token)
-            tokens.data.bot.bot_access_token = util.Encode(
-                tokens.data.bot.bot_access_token,
-            )
+            tokens.data.bot.bot_access_token = util.Encode(tokens.data.bot.bot_access_token)
 
             if (team.data && team.data.data.length > 0) {
                 await db.SlackTeam.update({
