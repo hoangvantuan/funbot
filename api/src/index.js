@@ -4,7 +4,6 @@ if (!process.env.VERSION) {
 
 const express = require('express')
 const bodyParser = require('body-parser')
-const bot = require('./bot')
 
 const log = require('./log')
 
