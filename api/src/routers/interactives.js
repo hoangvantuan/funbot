@@ -16,6 +16,8 @@ router.post('/', async (req, res) => {
             text: '',
         })
     }
+
+    res.status(200).end()
 })
 
 module.exports = router
