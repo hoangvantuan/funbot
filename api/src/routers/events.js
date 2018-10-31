@@ -9,6 +9,7 @@ router.post('/', async (req, res) => {
 
     if (req.body.type === 'url_verification') {
         res.send({ challenge: req.body.challenge })
+        return
     }
 
     const { type } = req.body.event

@@ -41,36 +41,89 @@ async function startCronUser(team, user) {
     if (user.google_tokens[0]) {
         const googleTokenID = user.google_tokens[0]
 
+        const auth = await GoogkeAuth.getOauth2Client(googleTokenID)
+
         user.sheets.forEach(sheet => {
             log.debug('staring cron sheet ', sheet)
-            startCronSheet(team, googleTokenID, sheet)
+            startCronSheet(team, auth, sheet)
         })
     }
 }
 
-async function startCronSheet(team, googleTokenID, sheetID) {
-    const auth = await GoogkeAuth.getOauth2Client(googleTokenID)
+async function startCronSheet(team, auth, sheetID) {
+    try {
+        const sheets = google.sheets({ version: 'v4', auth })
 
-    const sheets = google.sheets({ version: 'v4', auth })
+        sheets.spreadsheets.get(
+            {
+                spreadsheetId: sheetID,
+            },
+            (err, res) => {
+                const sheetArray = res.data.sheets.map(value => {
+                    return value.properties.title
+                })
 
-    sheets.spreadsheets.get(
+                sheetArray.forEach(sheet => {
+                    createJobFromSheet(sheets, sheetID, sheet)
+                })
+            },
+        )
+    } catch (err) {
+        log.debug(err)
+    }
+}
+
+function createJobFromSheet(sheets, sheetID, sheet) {
+    // get configure of spreadsheet
+    sheets.spreadsheets.values.get(
         {
             spreadsheetId: sheetID,
+            range: `${sheet}!A1:AA2`,
         },
         (err, res) => {
-            const sheetArray = res.data.sheets.map(value => {
-                return value.properties.title
-            })
+            if (err) {
+                log.debug(err)
+                return
+            }
 
-            sheetArray.forEach(val => {
-                createJobFromSheet(sheets, val)
-            })
+            const rows = convertToObject(res.data.values)
+
+            if (rows[0].type === 'random') {
+                console.log('random')
+            }
+
+            if (rows[0].type === 'normal') {
+                console.log('normal')
+            }
         },
     )
 }
 
-function createJobFromSheet(sheets, val) {
-    log.debug('starting cron ', val)
+function createJobForRandomType(sheets, sheetID, sheet) {
+    // jobManager.
+}
+
+function createJobForNormalType(sheets, sheetID, sheet) {}
+
+function convertToObject(rows) {
+    const results = []
+
+    if (rows == null || rows.length === 0) {
+        return []
+    }
+
+    const headers = rows[0]
+
+    rows.map((values, index) => {
+        if (index !== 0) {
+            results[index - 1] = {}
+            headers.map((value, i) => {
+                results[index - 1][value] = values[i]
+            })
+        }
+    })
+
+    return results
 }
 
 const worker = new Worker()

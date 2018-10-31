@@ -14,18 +14,11 @@ api.use(bodyParser.json())
 
 api.use(require('./routers'))
 
-// catch 404 and forward to error handler
-api.use((req, res, next) => {
-    const err = new Error('Not Found')
-    err.status = 404
-    next(err)
-})
-
 const server = api.listen(process.env.API_PORT || 8080, () => {
     log.debug(`Listening on port ' ${server.address().port}`)
 })
 
 // starting worker
-// const worker = require('./worker')
+const worker = require('./worker')
 
-// worker.start()
+worker.start()

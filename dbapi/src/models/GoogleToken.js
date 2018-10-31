@@ -24,7 +24,7 @@ const GoogleToken = new Schema(
             unique: true,
         },
         expiry_date: {
-            type: Date,
+            type: Number,
         },
     },
     {
