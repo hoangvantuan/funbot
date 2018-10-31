@@ -26,9 +26,9 @@ router.post('/', async (req, res) => {
 
                 if (usersRes.data.data.length > 0) {
                     usersRes.data.data.forEach(user => {
-                        if (user.google_tokens.length > 0) {
+                        if (user.google_tokens) {
                             db.GoogleToken.delete({
-                                _id: user.google_tokens[0]._id,
+                                _id: user.google_tokens._id,
                             })
                         }
 

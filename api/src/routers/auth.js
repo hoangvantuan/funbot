@@ -25,8 +25,8 @@ router.get('/google/redirected', (req, res) => {
             // remove all old token
             db.SlackUser.get({ user_id: state.userID })
                 .then(userRes => {
-                    if (userRes.data.data[0].google_tokens.length > 0) {
-                        const googleTokenID = userRes.data.data[0].google_tokens[0]._id
+                    if (userRes.data.data.google_tokens) {
+                        const googleTokenID = userRes.data.data[0].google_tokens._id
                         db.GoogleToken.delete({ _id: googleTokenID })
                     }
 
@@ -38,7 +38,7 @@ router.get('/google/redirected', (req, res) => {
                                     user_id: state.userID,
                                 }),
                                 value: JSON.stringify({
-                                    google_tokens: [result.data.data._id],
+                                    google_tokens: result.data.data._id,
                                 }),
                             }
 

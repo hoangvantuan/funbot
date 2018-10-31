@@ -43,8 +43,8 @@ function cleaAllJob() {
 }
 
 async function startCronUser(team, user) {
-    if (user.google_tokens[0]) {
-        const googleTokenID = user.google_tokens[0]
+    if (user.google_tokens) {
+        const googleTokenID = user.google_tokens
 
         const auth = await GoogkeAuth.getOauth2Client(googleTokenID)
 

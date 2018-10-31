@@ -13,12 +13,11 @@ const SlackUser = new Schema(
             ref: 'SlackTeam',
             required: true,
         },
-        google_tokens: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'GoogleToken',
-            },
-        ],
+        google_tokens: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'GoogleToken',
+        },
+
         sheets: [
             {
                 type: String,
