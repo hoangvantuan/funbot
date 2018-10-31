@@ -1,11 +1,12 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-
-const log = require('./log')
-
 if (!process.env.VERSION) {
     require('dotenv').config({ path: '../../.env' })
 }
+
+const express = require('express')
+const bodyParser = require('body-parser')
+const bot = require('./bot')
+
+const log = require('./log')
 
 const api = express()
 
@@ -25,7 +26,7 @@ const server = api.listen(process.env.API_PORT || 8080, () => {
     log.debug(`Listening on port ' ${server.address().port}`)
 })
 
-const Worker = require('./worker')
+// starting worker
+// const worker = require('./worker')
 
-const worker = new Worker()
-worker.start()
+// worker.start()

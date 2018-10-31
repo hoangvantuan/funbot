@@ -22,7 +22,6 @@
     "aes-js": "^3.1.1",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
-    "botkit": "^0.6.16",
     "cron-job-manager": "^2.1.1",
     "dotenv": "^6.1.0",
     "eslint": "^5.7.0",
@@ -32,6 +31,7 @@
     "forever": "^0.15.3",
     "googleapis": "^27.0.0",
     "log4js": "^3.0.6",
-    "nodemon": "^1.18.4"
+    "nodemon": "^1.18.4",
+    "slack": "^11.0.1"
   }
 }

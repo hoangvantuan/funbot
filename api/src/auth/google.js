@@ -1,6 +1,7 @@
 const { google } = require('googleapis')
 const util = require('../util')
 const db = require('../db')
+const log = require('../log')
 
 const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
@@ -38,6 +39,7 @@ class GoogleAuth {
         client.setCredentials(tokens)
 
         client.on('tokens', newTokens => {
+            log.debug('review google tokens ', newTokens)
             const query = {
                 query: JSON.stringify({
                     refresh_token: tokens.refresh_token,

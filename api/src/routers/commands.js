@@ -14,6 +14,7 @@ const askMessage = (userID, responseURL) => {
                 callback_id: 'auth_google_spreasheet_cancel',
                 color: '#3AA3E3',
                 attachment_type: 'default',
+                fallback: 'authen google spreasheet',
                 actions: [
                     {
                         name: 'GoogleAuthOk',
@@ -49,13 +50,8 @@ router.post('/', async (req, res) => {
                 userRes.data.statusText === 'ok'
                 && userRes.data.data.length === 1
             ) {
-                if (userRes.data.data[0].google_tokens.length > 0) {
-                    res.send('token was be registered')
-                } else {
-                    res.send(
-                        askMessage(req.body.user_id, req.body.response_url),
-                    )
-                }
+                // replace old token if had before
+                res.send(askMessage(req.body.user_id, req.body.response_url))
             } else {
                 const teamRes = await db.SlackTeam.get({
                     team_id: req.body.team_id,

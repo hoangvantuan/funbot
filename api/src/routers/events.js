@@ -5,11 +5,12 @@ const log = require('../log')
 const router = express.Router()
 
 router.post('/', async (req, res) => {
-    if (req.body.challenge) {
+    log.debug(req.body)
+
+    if (req.body.type === 'url_verification') {
         res.send({ challenge: req.body.challenge })
     }
 
-    log.debug(req.body)
     const { type } = req.body.event
 
     // remove app, all tokens

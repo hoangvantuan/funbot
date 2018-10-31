@@ -10,8 +10,10 @@ router.post('/', async (req, res) => {
 
     if (payload.callback_id === 'auth_google_spreasheet_cancel') {
         res.send({
+            response_type: 'ephemeral',
             replace_original: true,
-            text: 'Thanks you',
+            delete_original: true,
+            text: '',
         })
     }
 })

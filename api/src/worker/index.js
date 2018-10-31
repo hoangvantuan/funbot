@@ -20,7 +20,11 @@ class Worker {
 
             usersRes.data.data.forEach(user => {
                 log.debug('create worker for user', user)
-                startCronUser(team, user)
+                try {
+                    startCronUser(team, user)
+                } catch (err) {
+                    log.debug(err)
+                }
             })
         })
     }
@@ -69,4 +73,6 @@ function createJobFromSheet(sheets, val) {
     log.debug('starting cron ', val)
 }
 
-module.exports = Worker
+const worker = new Worker()
+
+module.exports = worker
