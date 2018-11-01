@@ -1,8 +1,10 @@
 const CronJonManager = require('cron-job-manager')
 const { google } = require('googleapis')
+const util = require('../util')
 const db = require('../db')
 const log = require('../log')
 const GoogkeAuth = require('../auth/google')
+const Slack = require('../bot')
 
 const jobManager = new CronJonManager()
 
@@ -69,7 +71,7 @@ async function startCronSheet(team, auth, sheetID) {
                 })
 
                 sheetArray.forEach(sheet => {
-                    createJobFromSheet(sheets, sheetID, sheet)
+                    createJobFromSheet(team, sheets, sheetID, sheet)
                 })
             },
         )
@@ -78,7 +80,7 @@ async function startCronSheet(team, auth, sheetID) {
     }
 }
 
-function createJobFromSheet(sheets, sheetID, sheet) {
+function createJobFromSheet(team, sheets, sheetID, sheet) {
     // get configure of spreadsheet
     sheets.spreadsheets.values.get(
         {
@@ -93,22 +95,132 @@ function createJobFromSheet(sheets, sheetID, sheet) {
 
             const rows = convertToObject(res.data.values)
 
-            if (rows[0].type === 'random') {
-                log.debug('random')
+            const headers = rows[0]
+
+            if (headers.type === 'random') {
+                // validate
+                if (!headers.time || !headers.channel) {
+                    return
+                }
+
+                if (!headers.username) {
+                    headers.username = 'reminder'
+                }
+
+                createJobForRandomType(team, sheets, sheetID, sheet, headers)
             }
 
-            if (rows[0].type === 'normal') {
-                log.debug('normal')
+            if (headers.type === 'normal') {
+                // validate
+                if (!headers.channel) {
+                    return
+                }
+
+                if (!headers.username) {
+                    headers.username = 'reminder'
+                }
+
+                createJobForNormalType(team, sheets, sheetID, sheet, headers)
             }
         },
     )
 }
 
-function createJobForRandomType(sheets, sheetID, sheet) {
-    // jobManager.
+function createJobForRandomType(team, sheets, sheetID, sheet, headers) {
+    const key = `${sheetID}-${sheet}`
+    jobManager.add(key, headers.time, () => {
+        sheets.spreadsheets.values.get(
+            {
+                spreadsheetId: sheetID,
+                range: `${sheet}!A3:AA100000`,
+            },
+            async (err, res) => {
+                if (err) {
+                    log.debug(err)
+                    return
+                }
+
+                const rows = convertToObject(res.data.values)
+
+                const index = util.RandomInt(rows.length)
+                const data = rows[index]
+
+                if (data) {
+                    if (!data.text) {
+                        return
+                    }
+
+                    const api = await Slack.BotAPI(team.team_id)
+
+                    api.chat.postMessage({
+                        channel: headers.channel,
+                        text: data.text,
+                        attachments: [
+                            {
+                                fields: [],
+                                image_url: data.image_url,
+                                thumb_url: data.thumb_url,
+                            },
+                        ],
+                        username: headers.username,
+                        icon_url: headers.icon_url,
+                    })
+                }
+            },
+        )
+    })
+
+    if (jobManager.exists(key)) {
+        jobManager.start(key)
+    }
 }
 
-function createJobForNormalType(sheets, sheetID, sheet) {}
+function createJobForNormalType(team, sheets, sheetID, sheet, headers) {
+    sheets.spreadsheets.values.get(
+        {
+            spreadsheetId: sheetID,
+            range: `${sheet}!A3:AA100000`,
+        },
+        async (err, res) => {
+            if (err) {
+                log.debug(err)
+                return
+            }
+
+            const rows = convertToObject(res.data.values)
+
+            const api = await Slack.BotAPI(team.team_id)
+
+            rows.forEach(row => {
+                // validate
+                if (!row.time || !row.text) {
+                    return
+                }
+
+                const key = `${sheetID}-${sheet}-${util.RandomString(10)}`
+                jobManager.add(key, row.time, () => {
+                    api.chat.postMessage({
+                        channel: headers.channel,
+                        text: row.text,
+                        attachments: [
+                            {
+                                fields: [],
+                                image_url: row.image_url,
+                                thumb_url: row.thumb_url,
+                            },
+                        ],
+                        username: headers.username,
+                        icon_url: headers.icon_url,
+                    })
+                })
+
+                if (jobManager.exists(key)) {
+                    jobManager.start(key)
+                }
+            })
+        },
+    )
+}
 
 function convertToObject(rows) {
     const results = []
