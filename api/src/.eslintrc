@@ -20,6 +20,7 @@
             "no-underscore-dangle":"off",
             "class-methods-use-this":"off",
             "new-cap":"off",
-            "max-len":"off"
+            "max-len":"off",
+            "no-case-declarations":"off"
     }
   }

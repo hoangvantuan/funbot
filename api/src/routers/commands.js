@@ -36,6 +36,50 @@ const askMessage = (userID, responseURL) => {
     }
 }
 
+const settingMessage = () => {
+    return {
+        text: 'Chào bạn, mình để mình là ứng dụng nhắc nhở, mình có thể giúp gì cho bạn?',
+        attachments: [
+            {
+                callback_id: 'settings',
+                color: '#3AA3E3',
+                attachment_type: 'default',
+                fallback: 'setting for app',
+                actions: [
+                    {
+                        name: 'list',
+                        text: 'List spreadsheet',
+                        type: 'button',
+                        value: 'list',
+                        style: 'default',
+                    },
+                    {
+                        name: 'add',
+                        text: 'Add spreadsheet',
+                        type: 'button',
+                        value: 'add',
+                        style: 'primary',
+                    },
+                    {
+                        name: 'remove',
+                        text: 'Remove spreadsheet',
+                        type: 'button',
+                        value: 'remove',
+                        style: 'danger',
+                    },
+                    {
+                        name: 'cancel',
+                        text: 'Tắt đi.',
+                        type: 'button',
+                        value: 'cancel',
+                        style: 'default',
+                    },
+                ],
+            },
+        ],
+    }
+}
+
 router.post('/', async (req, res) => {
     res.status(200).end()
     log.debug(req.body)
@@ -75,72 +119,8 @@ router.post('/', async (req, res) => {
         } catch (err) {
             log.debug(err)
         }
-    } else if (req.body.text.match('^add.*$')) {
-        const args = req.body.text.split(' ')
-        if (args[0] === 'add' && args[1]) {
-            try {
-                // get current sheet
-                const userRes = await db.SlackUser.get({
-                    user_id: req.body.user_id,
-                })
-
-                const query = {
-                    query: JSON.stringify({
-                        user_id: req.body.user_id,
-                    }),
-                    value: JSON.stringify({
-                        sheets: [...userRes.data.data[0].sheets, args[1]],
-                    }),
-                }
-                db.SlackUser.update(query).then(() => {
-                    axios.post(req.body.response_url, { text: `Register ${args[1]} sheet successfull` })
-                })
-            } catch (err) {
-                log.debug(err)
-            }
-        } else {
-            axios.post(req.body.response_url, { text: `Not valid commands ${req.body.text}` })
-        }
-    } else if (req.body.text.match('^list$')) {
-        try {
-            const userRes = await db.SlackUser.get({
-                user_id: req.body.user_id,
-            })
-
-            axios.post(req.body.response_url, { text: JSON.stringify(userRes.data.data[0].sheets, null, 4) })
-        } catch (err) {
-            log.debug(err)
-        }
-    } else if (req.body.text.match('^rm.*$')) {
-        const args = req.body.text.split(' ')
-
-        if (args[0] === 'rm' && args[1]) {
-            try {
-                const userRes = await db.SlackUser.get({
-                    user_id: req.body.user_id,
-                })
-
-                const newSheets = userRes.data.data[0].sheets.filter(sheet => {
-                    return sheet !== args[1]
-                })
-
-                const query = {
-                    query: JSON.stringify({
-                        user_id: req.body.user_id,
-                    }),
-                    value: JSON.stringify({
-                        sheets: newSheets,
-                    }),
-                }
-                db.SlackUser.update(query).then(() => {
-                    axios.post(req.body.response_url, { text: `Delete  ${args[1]} sheet successfull` })
-                })
-            } catch (err) {
-                log.debug('has error')
-            }
-        } else {
-            axios.post(req.body.response_url, { text: `Not valid commands ${req.body.text}` })
-        }
+    } else if (req.body.text.match('^help$')) {
+        axios.post(req.body.response_url, settingMessage())
     } else {
         axios.post(req.body.response_url, { text: `Not valid commands ${req.body.text}` })
     }
