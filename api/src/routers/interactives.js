@@ -29,7 +29,8 @@ router.post('/', async (req, res) => {
                         user_id: req.body.user_id,
                     })
 
-                    const text = userRes.data.data[0].sheets.length === 0 ? 'You not have any sheet.' : JSON.stringify(userRes.data.data[0].sheets, null, 4)
+                    const text =
+                        userRes.data.data[0].sheets.length === 0 ? 'You not have any sheet.' : JSON.stringify(userRes.data.data[0].sheets, null, 4)
                     axios.post(payload.response_url, util.TextWithSettings(text))
                 } catch (err) {
                     log.debug(err)
@@ -73,7 +74,9 @@ router.post('/', async (req, res) => {
                         },
                     }
 
-                    api.dialog.open(dialog)
+                    api.dialog.open(dialog).catch(err => {
+                        log.debug(err)
+                    })
                 } catch (err) {
                     log.debug(err)
                 }
@@ -100,7 +103,9 @@ router.post('/', async (req, res) => {
                         },
                     }
 
-                    api.dialog.open(dialog)
+                    api.dialog.open(dialog).catch(err => {
+                        log.debug(err)
+                    })
                 } catch (err) {
                     log.debug(err)
                 }
@@ -110,6 +115,10 @@ router.post('/', async (req, res) => {
                 break
         }
     } else if (payload.callback_id === 'add-sheet-id') {
+        if (!payload.submission) {
+            return
+        }
+
         const sheetID = payload.submission['sheet-id']
 
         if (worker.isRunningJob(`^${sheetID}.*`)) {
@@ -152,6 +161,10 @@ router.post('/', async (req, res) => {
                 })
         }
     } else if (payload.callback_id === 'remove-sheet-id') {
+        if (!payload.submission) {
+            return
+        }
+
         // remove all current job
         worker.clearAllJobMatch(`^${payload.submission['sheet-id']}.*`)
         db.SlackUser.get({ user_id: payload.user.id })
