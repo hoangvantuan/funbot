@@ -3,6 +3,8 @@ const axios = require('axios')
 const log = require('../log')
 const db = require('../db')
 const Slack = require('../bot')
+const util = require('../util')
+const worker = require('../worker')
 
 const router = express.Router()
 
@@ -12,7 +14,7 @@ router.post('/', async (req, res) => {
 
     const payload = JSON.parse(req.body.payload)
 
-    if (payload.callback_id === 'auth_google_spreasheet_cancel') {
+    if (payload.actions && payload.actions[0] && payload.actions[0].name === 'cancel') {
         axios.post(payload.response_url, {
             response_type: 'ephemeral',
             replace_original: true,
@@ -21,21 +23,13 @@ router.post('/', async (req, res) => {
         })
     } else if (payload.callback_id === 'settings') {
         switch (payload.actions[0].name) {
-            case 'cancel':
-                axios.post(payload.response_url, {
-                    response_type: 'ephemeral',
-                    replace_original: true,
-                    delete_original: true,
-                    text: '',
-                })
-                break
             case 'list':
                 try {
                     const userRes = await db.SlackUser.get({
                         user_id: req.body.user_id,
                     })
 
-                    axios.post(payload.response_url, { text: JSON.stringify(userRes.data.data[0].sheets, null, 4) })
+                    axios.post(payload.response_url, util.TextWithSettings(JSON.stringify(userRes.data.data[0].sheets, null, 4)))
                 } catch (err) {
                     log.debug(err)
                 }
@@ -55,10 +49,15 @@ router.post('/', async (req, res) => {
                         }
                     })
 
+                    if (!listsheets || listsheets.length === 0) {
+                        axios.post(payload.response_url, util.TextWithSettings('You not have any sheet'))
+                        return
+                    }
+
                     const dialog = {
                         trigger_id: payload.trigger_id,
                         dialog: {
-                            callback_id: 'remove-sheety-id',
+                            callback_id: 'remove-sheet-id',
                             title: 'Remove sheet',
                             submit_label: 'Remove',
                             notify_on_cancel: false,
@@ -66,7 +65,7 @@ router.post('/', async (req, res) => {
                                 {
                                     label: 'Sheets ID',
                                     type: 'select',
-                                    name: 'sheets-id',
+                                    name: 'sheet-id',
                                     options: listsheets,
                                 },
                             ],
@@ -86,7 +85,7 @@ router.post('/', async (req, res) => {
                     const dialog = {
                         trigger_id: payload.trigger_id,
                         dialog: {
-                            callback_id: 'add-sheety-id',
+                            callback_id: 'add-sheet-id',
                             title: 'Add sheet',
                             submit_label: 'Add',
                             notify_on_cancel: true,
@@ -94,7 +93,7 @@ router.post('/', async (req, res) => {
                                 {
                                     type: 'text',
                                     label: 'Sheet ID',
-                                    name: 'sheet_id',
+                                    name: 'sheet-id',
                                 },
                             ],
                         },
@@ -109,6 +108,79 @@ router.post('/', async (req, res) => {
             default:
                 break
         }
+    } else if (payload.callback_id === 'add-sheet-id') {
+        const sheetID = payload.submission['sheet-id']
+
+        if (worker.isRunningJob(`^${sheetID}.*`)) {
+            axios.post(payload.response_url, util.TextWithRestartJob(`${payload.submission['sheet-id']} is running, you mean restart`))
+        } else {
+            db.SlackUser.get({ user_id: payload.user.id })
+                .then(userRes => {
+                    if (userRes.data.data[0].sheets.includes(sheetID)) {
+                        axios.post(
+                            payload.response_url,
+                            util.TextWithRestartJob(`${payload.submission['sheet-id']} was be add but stopped  you mean start`),
+                        )
+                    } else {
+                        const newSheets = [...userRes.data.data[0].sheets, sheetID]
+
+                        const query = {
+                            query: JSON.stringify({
+                                user_id: payload.user.id,
+                            }),
+                            value: JSON.stringify({
+                                sheets: newSheets,
+                            }),
+                        }
+
+                        db.SlackUser.update(query)
+                            .then(() => {
+                                axios.post(payload.response_url, util.TextWithSettings(`Add  ${payload.submission['sheet-id']} success`))
+
+                                worker.startCronUser(userRes.data.data[0], [sheetID])
+                            })
+                            .catch(err => {
+                                log.debug(err)
+                                axios.post(payload.response_url, util.TextWithSettings(`Add ${payload.submission['sheet-id']} error`))
+                            })
+                    }
+                })
+                .catch(err => {
+                    log.debug(err)
+                    axios.post(payload.response_url, util.TextWithSettings(`Add ${payload.submission['sheet-id']} error`))
+                })
+        }
+    } else if (payload.callback_id === 'remove-sheet-id') {
+        // remove all current job
+        worker.clearAllJobMatch(`^${payload.submission['sheet-id']}.*`)
+        db.SlackUser.get({ user_id: payload.user.id })
+            .then(userRes => {
+                const newSheets = userRes.data.data[0].sheets.filter(sheet => {
+                    return sheet !== payload.submission['sheet-id']
+                })
+
+                const query = {
+                    query: JSON.stringify({
+                        user_id: payload.user.id,
+                    }),
+                    value: JSON.stringify({
+                        sheets: newSheets,
+                    }),
+                }
+
+                db.SlackUser.update(query)
+                    .then(() => {
+                        axios.post(payload.response_url, util.TextWithSettings(`Remove ${payload.submission['sheet-id']} success`))
+                    })
+                    .catch(err => {
+                        log.debug(err)
+                        axios.post(payload.response_url, util.TextWithSettings(`Remove ${payload.submission['sheet-id']} error`))
+                    })
+            })
+            .catch(err => {
+                log.debug(err)
+                axios.post(payload.response_url, util.TextWithSettings(`Remove ${payload.submission['sheet-id']} error`))
+            })
     }
 })
 

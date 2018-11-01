@@ -51,3 +51,77 @@ module.exports.RandomString = max => {
 
     return text
 }
+
+module.exports.TextWithSettings = text => {
+    return {
+        text,
+        attachments: [
+            {
+                callback_id: 'settings',
+                color: '#3AA3E3',
+                attachment_type: 'default',
+                fallback: 'setting for app',
+                actions: [
+                    {
+                        name: 'list',
+                        text: 'List spreadsheet',
+                        type: 'button',
+                        value: 'list',
+                        style: 'default',
+                    },
+                    {
+                        name: 'add',
+                        text: 'Add spreadsheet',
+                        type: 'button',
+                        value: 'add',
+                        style: 'primary',
+                    },
+                    {
+                        name: 'remove',
+                        text: 'Remove spreadsheet',
+                        type: 'button',
+                        value: 'remove',
+                        style: 'danger',
+                    },
+                    {
+                        name: 'cancel',
+                        text: 'Tắt đi.',
+                        type: 'button',
+                        value: 'cancel',
+                        style: 'default',
+                    },
+                ],
+            },
+        ],
+    }
+}
+
+module.exports.TextWithRestartJob = text => {
+    return {
+        text,
+        attachments: [
+            {
+                callback_id: 'restart',
+                color: '#3AA3E3',
+                attachment_type: 'default',
+                fallback: 'restart job',
+                actions: [
+                    {
+                        name: 'restart-job',
+                        text: 'Restart',
+                        type: 'button',
+                        value: 'restart-job',
+                        style: 'primary',
+                    },
+                    {
+                        name: 'cancel',
+                        text: 'Tắt đi.',
+                        type: 'button',
+                        value: 'cancel',
+                        style: 'default',
+                    },
+                ],
+            },
+        ],
+    }
+}

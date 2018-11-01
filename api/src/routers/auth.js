@@ -12,8 +12,10 @@ router.get('/google/redirected', (req, res) => {
     if (req.query && req.query.code) {
         const state = JSON.parse(util.Decode(req.query.state))
 
-        if (state.responseURL) {
-            axios.post(state.responseURL, {
+        console.log(state)
+
+        if (state.response_url) {
+            axios.post(state.response_url, {
                 response_type: 'ephemeral',
                 replace_original: true,
                 delete_original: true,
@@ -23,9 +25,9 @@ router.get('/google/redirected', (req, res) => {
 
         GoogleAuth.getToken(req.query.code).then(tokens => {
             // remove all old token
-            db.SlackUser.get({ user_id: state.userID })
+            db.SlackUser.get({ user_id: state.user_id })
                 .then(userRes => {
-                    if (userRes.data.data.google_tokens) {
+                    if (userRes.data.data[0].google_tokens) {
                         const googleTokenID = userRes.data.data[0].google_tokens._id
                         db.GoogleToken.delete({ _id: googleTokenID })
                     }
@@ -35,7 +37,7 @@ router.get('/google/redirected', (req, res) => {
                         .then(result => {
                             const query = {
                                 query: JSON.stringify({
-                                    user_id: state.userID,
+                                    user_id: state.user_id,
                                 }),
                                 value: JSON.stringify({
                                     google_tokens: result.data.data._id,

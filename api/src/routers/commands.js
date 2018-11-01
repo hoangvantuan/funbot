@@ -3,10 +3,11 @@ const axios = require('axios')
 const db = require('../db')
 const GoogleAuth = require('../auth/google')
 const log = require('../log')
+const util = require('../util')
 
 const router = express.Router()
 
-const askMessage = (userID, responseURL) => {
+const askMessage = payload => {
     return {
         text: 'Cho mình quyền truy cập vào google spreasheet của ấy nhé?',
         attachments: [
@@ -20,59 +21,15 @@ const askMessage = (userID, responseURL) => {
                         name: 'GoogleAuthOk',
                         text: 'Ok ấy',
                         type: 'button',
-                        url: GoogleAuth.getURL(userID, responseURL),
+                        url: GoogleAuth.getURL(payload),
                         style: 'primary',
-                    },
-                    {
-                        name: 'GoogleAuthCancel',
-                        text: 'Tắt đi.',
-                        type: 'button',
-                        value: 'GoogkeAuthCancel',
-                        style: 'danger',
-                    },
-                ],
-            },
-        ],
-    }
-}
-
-const settingMessage = () => {
-    return {
-        text: 'Chào bạn, mình để mình là ứng dụng nhắc nhở, mình có thể giúp gì cho bạn?',
-        attachments: [
-            {
-                callback_id: 'settings',
-                color: '#3AA3E3',
-                attachment_type: 'default',
-                fallback: 'setting for app',
-                actions: [
-                    {
-                        name: 'list',
-                        text: 'List spreadsheet',
-                        type: 'button',
-                        value: 'list',
-                        style: 'default',
-                    },
-                    {
-                        name: 'add',
-                        text: 'Add spreadsheet',
-                        type: 'button',
-                        value: 'add',
-                        style: 'primary',
-                    },
-                    {
-                        name: 'remove',
-                        text: 'Remove spreadsheet',
-                        type: 'button',
-                        value: 'remove',
-                        style: 'danger',
                     },
                     {
                         name: 'cancel',
                         text: 'Tắt đi.',
                         type: 'button',
                         value: 'cancel',
-                        style: 'default',
+                        style: 'danger',
                     },
                 ],
             },
@@ -93,7 +50,7 @@ router.post('/', async (req, res) => {
 
             if (userRes.data.statusText === 'ok' && userRes.data.data.length === 1) {
                 // replace old token if had before
-                axios.post(req.body.response_url, askMessage(req.body.user_id, req.body.response_url))
+                axios.post(req.body.response_url, askMessage(req.body))
             } else {
                 const teamRes = await db.SlackTeam.get({
                     team_id: req.body.team_id,
@@ -111,7 +68,7 @@ router.post('/', async (req, res) => {
                         log.debug(userRes2.data)
                     }
 
-                    axios.post(req.body.response_url, askMessage(req.body.user_id, req.body.response_url))
+                    axios.post(req.body.response_url, askMessage(req.body))
                 } else {
                     log.debug(teamRes.data)
                 }
@@ -120,7 +77,7 @@ router.post('/', async (req, res) => {
             log.debug(err)
         }
     } else if (req.body.text.match('^help$')) {
-        axios.post(req.body.response_url, settingMessage())
+        axios.post(req.body.response_url, util.TextWithSettings('Chào bạn, mình để mình là ứng dụng nhắc nhở, mình có thể giúp gì cho bạn?'))
     } else {
         axios.post(req.body.response_url, { text: `Not valid commands ${req.body.text}` })
     }

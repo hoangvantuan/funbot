@@ -3,22 +3,13 @@ const util = require('../util')
 const db = require('../db')
 const log = require('../log')
 
-const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET,
-    process.env.GOOGLE_REDIRECT_URI,
-)
+const oauth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, process.env.GOOGLE_REDIRECT_URI)
 class GoogleAuth {
-    static getURL(userID, responseURL) {
-        const state = {
-            userID,
-            responseURL,
-        }
-
+    static getURL(payload) {
         return oauth2Client.generateAuthUrl({
             access_type: 'offline',
             scope: process.env.GOOGLE_SCOPES,
-            state: util.Encode(JSON.stringify(state)),
+            state: util.Encode(JSON.stringify(payload)),
         })
     }
 
@@ -27,11 +18,7 @@ class GoogleAuth {
     }
 
     static async getOauth2Client(googleTokenID) {
-        const client = new google.auth.OAuth2(
-            process.env.GOOGLE_CLIENT_ID,
-            process.env.GOOGLE_CLIENT_SECRET,
-            process.env.GOOGLE_REDIRECT_URI,
-        )
+        const client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, process.env.GOOGLE_REDIRECT_URI)
         const googleTokenRes = await db.GoogleToken.get({ _id: googleTokenID })
 
         const tokens = googleTokenRes.data.data[0]
