@@ -29,7 +29,8 @@ router.post('/', async (req, res) => {
                         user_id: req.body.user_id,
                     })
 
-                    axios.post(payload.response_url, util.TextWithSettings(JSON.stringify(userRes.data.data[0].sheets, null, 4)))
+                    const text = userRes.data.data[0].sheets.length === 0 ? 'You not have any sheet.' : JSON.stringify(userRes.data.data[0].sheets, null, 4)
+                    axios.post(payload.response_url, util.TextWithSettings(text))
                 } catch (err) {
                     log.debug(err)
                 }
