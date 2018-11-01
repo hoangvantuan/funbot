@@ -1,4 +1,5 @@
 const express = require('express')
+const axios = require('axios')
 const db = require('../db')
 const GoogleAuth = require('../auth/google')
 const log = require('../log')
@@ -7,7 +8,6 @@ const router = express.Router()
 
 const askMessage = (userID, responseURL) => {
     return {
-        response_type: 'in_channel',
         text: 'Cho mình quyền truy cập vào google spreasheet của ấy nhé?',
         attachments: [
             {
@@ -37,6 +37,7 @@ const askMessage = (userID, responseURL) => {
 }
 
 router.post('/', async (req, res) => {
+    res.status(200).end()
     log.debug(req.body)
 
     if (req.body.text === 'authen') {
@@ -48,7 +49,7 @@ router.post('/', async (req, res) => {
 
             if (userRes.data.statusText === 'ok' && userRes.data.data.length === 1) {
                 // replace old token if had before
-                res.send(askMessage(req.body.user_id, req.body.response_url))
+                axios.post(req.body.response_url, askMessage(req.body.user_id, req.body.response_url))
             } else {
                 const teamRes = await db.SlackTeam.get({
                     team_id: req.body.team_id,
@@ -64,18 +65,15 @@ router.post('/', async (req, res) => {
 
                     if (userRes2.data.statusText !== 'ok') {
                         log.debug(userRes2.data)
-                        res.send({ text: 'has error' })
                     }
 
-                    res.send(askMessage(req.body.user_id, req.body.response_url))
+                    axios.post(req.body.response_url, askMessage(req.body.user_id, req.body.response_url))
                 } else {
                     log.debug(teamRes.data)
-                    res.send({ text: 'has error' })
                 }
             }
         } catch (err) {
             log.debug(err)
-            res.send({ text: 'has error' })
         }
     } else if (req.body.text.match('^add.*$')) {
         const args = req.body.text.split(' ')
@@ -95,16 +93,13 @@ router.post('/', async (req, res) => {
                     }),
                 }
                 db.SlackUser.update(query).then(() => {
-                    res.send({
-                        text: 'Register sheet successfull',
-                    })
+                    axios.post(req.body.response_url, { text: `Register ${args[1]} sheet successfull` })
                 })
             } catch (err) {
                 log.debug(err)
-                res.send({ text: 'has error' })
             }
         } else {
-            res.send(`not valid command ${req.body.text}`)
+            axios.post(req.body.response_url, { text: `Not valid commands ${req.body.text}` })
         }
     } else if (req.body.text.match('^list$')) {
         try {
@@ -112,10 +107,9 @@ router.post('/', async (req, res) => {
                 user_id: req.body.user_id,
             })
 
-            res.send(JSON.stringify(userRes.data.data[0].sheets), null, 2)
+            axios.post(req.body.response_url, { text: JSON.stringify(userRes.data.data[0].sheets, null, 4) })
         } catch (err) {
             log.debug(err)
-            res.send({ text: 'has error' })
         }
     } else if (req.body.text.match('^rm.*$')) {
         const args = req.body.text.split(' ')
@@ -139,18 +133,16 @@ router.post('/', async (req, res) => {
                     }),
                 }
                 db.SlackUser.update(query).then(() => {
-                    res.send({
-                        text: 'delete sheet successfull',
-                    })
+                    axios.post(req.body.response_url, { text: `Delete  ${args[1]} sheet successfull` })
                 })
             } catch (err) {
                 log.debug('has error')
             }
         } else {
-            res.send(`not valid command ${req.body.text}`)
+            axios.post(req.body.response_url, { text: `Not valid commands ${req.body.text}` })
         }
     } else {
-        res.send(`not valid command ${req.body.text}`)
+        axios.post(req.body.response_url, { text: `Not valid commands ${req.body.text}` })
     }
 })
 

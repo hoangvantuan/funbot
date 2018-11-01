@@ -17,7 +17,7 @@ router.get('/google/redirected', (req, res) => {
                 response_type: 'ephemeral',
                 replace_original: true,
                 delete_original: true,
-                text: 'Thanks you for give me can access to spreasheet',
+                text: 'Ok giờ bạn có thể dùng mình thoải mái rùi!!',
             })
         }
 

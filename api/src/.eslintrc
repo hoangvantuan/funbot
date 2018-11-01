@@ -19,6 +19,7 @@
             "no-return-await": 0,
             "no-underscore-dangle":"off",
             "class-methods-use-this":"off",
-            "new-cap":"off"
+            "new-cap":"off",
+            "max-len":"off"
     }
   }
