@@ -9,10 +9,12 @@ const util = require('../util')
 const router = express.Router()
 
 router.get('/google/redirected', (req, res) => {
+    log.debug('Auth new google token', req.query)
+
     if (req.query && req.query.code) {
         const state = JSON.parse(util.Decode(req.query.state))
 
-        console.log(state)
+        log.debug('state ', state)
 
         if (state.response_url) {
             axios.post(state.response_url, {
@@ -29,6 +31,9 @@ router.get('/google/redirected', (req, res) => {
                 .then(userRes => {
                     if (userRes.data.data[0].google_tokens) {
                         const googleTokenID = userRes.data.data[0].google_tokens._id
+
+                        log.debug('remove google token', googleTokenID, 'userID', state.user_id)
+
                         db.GoogleToken.delete({ _id: googleTokenID })
                     }
 
@@ -46,24 +51,26 @@ router.get('/google/redirected', (req, res) => {
 
                             db.SlackUser.update(query)
                                 .then(() => {
+                                    log.info('new google token was generate for userid ', state.user_id)
                                     res.send('ok ')
                                 })
                                 .catch(err => {
-                                    log.debug(err)
+                                    log.error(err)
                                     res.send('error')
                                 })
                         })
                         .catch(err => {
-                            log.debug(err)
+                            log.error(err)
                             res.send('not found')
                         })
                 })
                 .catch(err => {
-                    log.debug(err)
+                    log.error(err)
                     res.send('not found')
                 })
         })
     } else {
+        log.error('not valid requret', req)
         res.send('not found')
     }
 })
@@ -77,9 +84,12 @@ router.get('/google/url', (req, res) => {
 })
 
 router.get('/slack/redirected', async (req, res) => {
+    log.debug(req.query)
+
     const { query } = req
 
     if (!query.code) {
+        log.error('not valid request', req)
         res.send('code is invalid')
     }
 
@@ -101,21 +111,26 @@ router.get('/slack/redirected', async (req, res) => {
                     value: JSON.stringify(tokens.data),
                 })
 
+                log.info('app was reinstall for workspace', team.data.team_name)
+
                 res.redirect('https://slack.com/app_redirect?app=ADHDD3T9P')
             } else {
                 await db.SlackTeam.save(tokens.data)
+
+                log.info('app was install for workspace', team.data.team_name)
+
                 res.redirect('https://slack.com/app_redirect?app=ADHDD3T9P')
             }
         }
     } catch (err) {
         if (err.response) {
-            log.debug(err.response.data)
-            log.debug(err.response.status)
-            log.debug(err.response.headers)
+            log.error(err.response.data)
+            log.error(err.response.status)
+            log.error(err.response.headers)
         } else if (err.request) {
-            log.debug(err.request)
+            log.error(err.request)
         } else {
-            log.debug('unknown error')
+            log.error('unknown error', err)
         }
 
         res.status(400).send('Bad request')

@@ -9,7 +9,7 @@ const router = express.Router()
 
 const askMessage = payload => {
     return {
-        text: 'Cho mình quyền truy cập vào google spreasheet của ấy nhé?',
+        text: 'Can i access to your spreadsheet?',
         attachments: [
             {
                 callback_id: 'auth_google_spreasheet_cancel',
@@ -19,14 +19,14 @@ const askMessage = payload => {
                 actions: [
                     {
                         name: 'GoogleAuthOk',
-                        text: 'Ok ấy',
+                        text: 'Authen',
                         type: 'button',
                         url: GoogleAuth.getURL(payload),
                         style: 'primary',
                     },
                     {
                         name: 'cancel',
-                        text: 'Tắt đi.',
+                        text: 'Close',
                         type: 'button',
                         value: 'cancel',
                         style: 'danger',
@@ -39,6 +39,7 @@ const askMessage = payload => {
 
 router.post('/', async (req, res) => {
     res.status(200).end()
+
     log.debug(req.body)
 
     if (req.body.text === 'authen') {
@@ -48,6 +49,8 @@ router.post('/', async (req, res) => {
                 user_id: req.body.user_id,
             })
 
+            log.debug(userRes.data)
+
             if (userRes.data.statusText === 'ok' && userRes.data.data.length === 1) {
                 // replace old token if had before
                 axios.post(req.body.response_url, askMessage(req.body))
@@ -55,6 +58,8 @@ router.post('/', async (req, res) => {
                 const teamRes = await db.SlackTeam.get({
                     team_id: req.body.team_id,
                 })
+
+                log.debug(teamRes.data)
 
                 if (teamRes.data.statusText === 'ok' && teamRes.data.data.length === 1) {
                     const team = teamRes.data.data[0]
@@ -65,19 +70,23 @@ router.post('/', async (req, res) => {
                     })
 
                     if (userRes2.data.statusText !== 'ok') {
-                        log.debug(userRes2.data)
+                        log.error(userRes2.data)
+                        axios.post(req.body.response_url, { text: 'has error, please try again!' })
+                        return
                     }
 
                     axios.post(req.body.response_url, askMessage(req.body))
                 } else {
-                    log.debug(teamRes.data)
+                    axios.post(req.body.response_url, { text: 'has error, please try again!' })
+                    log.error(teamRes.data)
                 }
             }
         } catch (err) {
-            log.debug(err)
+            axios.post(req.body.response_url, { text: 'has error, please try again!' })
+            log.error(err)
         }
     } else if (req.body.text.match('^help$')) {
-        axios.post(req.body.response_url, util.TextWithSettings('Chào bạn, mình để mình là ứng dụng nhắc nhở, mình có thể giúp gì cho bạn?'))
+        axios.post(req.body.response_url, util.TextWithSettings('Hello, can i help you?'))
     } else {
         axios.post(req.body.response_url, { text: `Not valid commands ${req.body.text}` })
     }

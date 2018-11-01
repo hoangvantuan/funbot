@@ -18,11 +18,16 @@ router.post('/', async (req, res) => {
     // TODO: remove all relate google token
     if (type === 'tokens_revoked') {
         const teamRes = await db.SlackTeam.get({ team_id: req.body.team_id })
+
+        log.debug(teamRes.data)
+
         if (teamRes.data.data.length > 0) {
             try {
                 const usersRes = await db.SlackUser.get({
                     slack_team: teamRes.data.data[0]._id,
                 })
+
+                log.debug(usersRes.data)
 
                 if (usersRes.data.data.length > 0) {
                     usersRes.data.data.forEach(user => {
@@ -36,8 +41,10 @@ router.post('/', async (req, res) => {
                     })
                 }
                 db.SlackTeam.delete({ team_id: req.body.team_id })
+
+                log.info('app was be uninstall in', req.body.team_id)
             } catch (err) {
-                log.debug(err)
+                log.error(err)
             }
         }
     }

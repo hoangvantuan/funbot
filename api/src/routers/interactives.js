@@ -10,6 +10,7 @@ const router = express.Router()
 
 router.post('/', async (req, res) => {
     res.status(200).end()
+
     log.debug(req.body)
 
     const payload = JSON.parse(req.body.payload)
@@ -29,11 +30,13 @@ router.post('/', async (req, res) => {
                         user_id: req.body.user_id,
                     })
 
-                    const text =
-                        userRes.data.data[0].sheets.length === 0 ? 'You not have any sheet.' : JSON.stringify(userRes.data.data[0].sheets, null, 4)
+                    log.debug(userRes.data)
+
+                    const text = userRes.data.data[0].sheets.length === 0 ? 'You not have any sheet.' : JSON.stringify(userRes.data.data[0].sheets, null, 4)
                     axios.post(payload.response_url, util.TextWithSettings(text))
                 } catch (err) {
-                    log.debug(err)
+                    axios.post(payload.response_url, { text: 'has error, please try again!' })
+                    log.error(err)
                 }
                 break
             case 'remove':
@@ -41,6 +44,8 @@ router.post('/', async (req, res) => {
                     const userRes = await db.SlackUser.get({
                         user_id: req.body.user_id,
                     })
+
+                    log.debug(userRes.data)
 
                     const api = await Slack.BotAPI(payload.team.id)
 
@@ -50,6 +55,8 @@ router.post('/', async (req, res) => {
                             value: sheet,
                         }
                     })
+
+                    log.debug('remove list sheet', listsheets)
 
                     if (!listsheets || listsheets.length === 0) {
                         axios.post(payload.response_url, util.TextWithSettings('You not have any sheet'))
@@ -75,10 +82,12 @@ router.post('/', async (req, res) => {
                     }
 
                     api.dialog.open(dialog).catch(err => {
-                        log.debug(err)
+                        axios.post(payload.response_url, { text: 'has error, please try again!!' })
+                        log.error(err)
                     })
                 } catch (err) {
-                    log.debug(err)
+                    axios.post(payload.response_url, { text: 'has error, please try again!!' })
+                    log.error(err)
                 }
 
                 break
@@ -104,12 +113,13 @@ router.post('/', async (req, res) => {
                     }
 
                     api.dialog.open(dialog).catch(err => {
-                        log.debug(err)
+                        axios.post(payload.response_url, { text: 'has error, please try again!!' })
+                        log.error(err)
                     })
                 } catch (err) {
-                    log.debug(err)
+                    axios.post(payload.response_url, { text: 'has error, please try again!!' })
+                    log.error(err)
                 }
-
                 break
             default:
                 break
@@ -121,18 +131,21 @@ router.post('/', async (req, res) => {
 
         const sheetID = payload.submission['sheet-id']
 
+        log.debug('add sheet id', sheetID)
+
         if (worker.isRunningJob(`^${sheetID}.*`)) {
             axios.post(payload.response_url, util.TextWithRestartJob(`${payload.submission['sheet-id']} is running, you mean restart`))
         } else {
             db.SlackUser.get({ user_id: payload.user.id })
                 .then(userRes => {
+                    log.debug(userRes.data)
+
                     if (userRes.data.data[0].sheets.includes(sheetID)) {
-                        axios.post(
-                            payload.response_url,
-                            util.TextWithRestartJob(`${payload.submission['sheet-id']} was be add but stopped  you mean start`),
-                        )
+                        axios.post(payload.response_url, util.TextWithRestartJob(`${payload.submission['sheet-id']} was be add but stopped  you mean start`))
                     } else {
                         const newSheets = [...userRes.data.data[0].sheets, sheetID]
+
+                        log.debug('new sheet list', newSheets)
 
                         const query = {
                             query: JSON.stringify({
@@ -150,13 +163,13 @@ router.post('/', async (req, res) => {
                                 worker.startCronUser(userRes.data.data[0], [sheetID])
                             })
                             .catch(err => {
-                                log.debug(err)
+                                log.error(err)
                                 axios.post(payload.response_url, util.TextWithSettings(`Add ${payload.submission['sheet-id']} error`))
                             })
                     }
                 })
                 .catch(err => {
-                    log.debug(err)
+                    log.error(err)
                     axios.post(payload.response_url, util.TextWithSettings(`Add ${payload.submission['sheet-id']} error`))
                 })
         }
@@ -169,6 +182,8 @@ router.post('/', async (req, res) => {
         worker.clearAllJobMatch(`^${payload.submission['sheet-id']}.*`)
         db.SlackUser.get({ user_id: payload.user.id })
             .then(userRes => {
+                log.debug(userRes.data)
+
                 const newSheets = userRes.data.data[0].sheets.filter(sheet => {
                     return sheet !== payload.submission['sheet-id']
                 })
@@ -187,12 +202,12 @@ router.post('/', async (req, res) => {
                         axios.post(payload.response_url, util.TextWithSettings(`Remove ${payload.submission['sheet-id']} success`))
                     })
                     .catch(err => {
-                        log.debug(err)
+                        log.error(err)
                         axios.post(payload.response_url, util.TextWithSettings(`Remove ${payload.submission['sheet-id']} error`))
                     })
             })
             .catch(err => {
-                log.debug(err)
+                log.error(err)
                 axios.post(payload.response_url, util.TextWithSettings(`Remove ${payload.submission['sheet-id']} error`))
             })
     }

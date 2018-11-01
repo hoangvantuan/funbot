@@ -85,7 +85,7 @@ module.exports.TextWithSettings = text => {
                     },
                     {
                         name: 'cancel',
-                        text: 'Tắt đi.',
+                        text: 'Close',
                         type: 'button',
                         value: 'cancel',
                         style: 'default',
@@ -115,7 +115,7 @@ module.exports.TextWithRestartJob = text => {
                     },
                     {
                         name: 'cancel',
-                        text: 'Tắt đi.',
+                        text: 'Close',
                         type: 'button',
                         value: 'cancel',
                         style: 'default',

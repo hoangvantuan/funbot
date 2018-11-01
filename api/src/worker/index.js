@@ -17,10 +17,13 @@ class Worker {
             const teamsRes = await db.SlackTeam.get({})
 
             teamsRes.data.data.forEach(team => {
+                log.debug('start cron job for team', team)
+                log.info('starting cron job for team', team.team_name)
+
                 this.startCronTeam(team)
             })
         } catch (err) {
-            log.debug(err)
+            log.error(err)
         }
     }
 
@@ -43,10 +46,12 @@ class Worker {
     isRunningJob(regex) {
         for (const key in jobManager.jobs) {
             if (key.match(regex)) {
+                log.debug('is runnung job', key, regex)
                 return true
             }
         }
 
+        log.debug('not have running job', regex)
         return false
     }
 
@@ -56,12 +61,15 @@ class Worker {
             slack_team: team._id,
         })
 
+        log.debug(usersRes.data)
+
         usersRes.data.data.forEach(user => {
             log.debug('create worker for user', user)
+            log.info('create worker for user', user.user_id)
             try {
                 this.startCronUser(user)
             } catch (err) {
-                log.debug(err)
+                log.error(err)
             }
         })
     }
@@ -78,6 +86,7 @@ class Worker {
 
             cronsheets.forEach(sheet => {
                 log.debug('staring cron sheet ', sheet)
+                log.info('staring cron sheet ', sheet)
                 this.startCronSheet(team, sheet, auth)
             })
         }
@@ -93,7 +102,7 @@ class Worker {
                 },
                 (err, res) => {
                     if (err) {
-                        log.debug(err)
+                        log.error(err)
                         return
                     }
                     const sheetArray = res.data.sheets.map(value => {
@@ -102,12 +111,13 @@ class Worker {
 
                     sheetArray.forEach(sheet => {
                         log.debug('create job for sheet', sheetID)
+                        log.info('create job for sheet name', sheetID)
                         this.createJobFromSheet(team, sheets, sheetID, sheet)
                     })
                 },
             )
         } catch (err) {
-            log.debug(err)
+            log.error(err)
         }
     }
 
@@ -120,13 +130,15 @@ class Worker {
             },
             (err, res) => {
                 if (err) {
-                    log.debug(err)
+                    log.error(err)
                     return
                 }
 
                 const rows = convertToObject(res.data.values)
 
                 const headers = rows[0]
+
+                log.debug('headers of sheet ', sheetID, headers)
 
                 if (headers.type === 'random') {
                     // validate
@@ -167,7 +179,7 @@ class Worker {
                 },
                 async (err, res) => {
                     if (err) {
-                        log.debug(err)
+                        log.error(err)
                         return
                     }
 
@@ -214,7 +226,7 @@ class Worker {
             },
             async (err, res) => {
                 if (err) {
-                    log.debug(err)
+                    log.error(err)
                     return
                 }
 
