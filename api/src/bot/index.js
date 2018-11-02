@@ -12,6 +12,6 @@ module.exports.BotAPI = async teamID => {
         return new Slack({ token: util.Decode(team.bot.bot_access_token) })
     }
 
-    log.debug(res.data.data)
+    log.error(res.data.data)
     throw new Error('can not create slack api client')
 }

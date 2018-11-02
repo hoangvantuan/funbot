@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../../.env' })
+require('dotenv').config({ path: `../../${process.env.FUNBOT_ENV}.env` })
 
 const Log4js = require('log4js')
 
