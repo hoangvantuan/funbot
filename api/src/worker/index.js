@@ -66,11 +66,7 @@ class Worker {
         usersRes.data.data.forEach(user => {
             log.debug('create worker for user', user)
             log.info('create worker for user', user.user_id)
-            try {
-                this.startCronUser(user)
-            } catch (err) {
-                log.error(err)
-            }
+            this.startCronUser(user)
         })
     }
 
@@ -93,32 +89,28 @@ class Worker {
     }
 
     async startCronSheet(team, sheetID, auth) {
-        try {
-            const sheets = google.sheets({ version: 'v4', auth })
+        const sheets = google.sheets({ version: 'v4', auth })
 
-            sheets.spreadsheets.get(
-                {
-                    spreadsheetId: sheetID,
-                },
-                (err, res) => {
-                    if (err) {
-                        log.error(err)
-                        return
-                    }
-                    const sheetArray = res.data.sheets.map(value => {
-                        return value.properties.title
-                    })
+        sheets.spreadsheets.get(
+            {
+                spreadsheetId: sheetID,
+            },
+            (err, res) => {
+                if (err) {
+                    log.error(err)
+                    return
+                }
+                const sheetArray = res.data.sheets.map(value => {
+                    return value.properties.title
+                })
 
-                    sheetArray.forEach(sheet => {
-                        log.debug('create job for sheet', sheetID)
-                        log.info('create job for sheet name', sheetID)
-                        this.createJobFromSheet(team, sheets, sheetID, sheet)
-                    })
-                },
-            )
-        } catch (err) {
-            log.error(err)
-        }
+                sheetArray.forEach(sheet => {
+                    log.debug('create job for sheet', sheetID)
+                    log.info('create job for sheet name', sheetID)
+                    this.createJobFromSheet(team, sheets, sheetID, sheet)
+                })
+            },
+        )
     }
 
     createJobFromSheet(team, sheets, sheetID, sheet) {
