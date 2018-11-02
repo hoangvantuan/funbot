@@ -16,7 +16,7 @@ api.use((req, res) => {
 })
 
 const server = api.listen(process.env.API_PORT || 8080, () => {
-    log.debug(`Listening on port ' ${server.address().port}`)
+    log.info(`Listening on port ' ${server.address().port}`)
 })
 
 // starting worker
