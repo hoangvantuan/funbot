@@ -32,10 +32,12 @@ router.post('/', async (req, res) => {
 
                     log.debug(userRes.data)
 
-                    const text = userRes.data.data[0].sheets.length === 0 ? 'You not have any sheet.' : JSON.stringify(userRes.data.data[0].sheets, null, 4)
+                    const text = !userRes.data.data[0] || !userRes.data.data[0].sheets || userRes.data.data[0].sheets.length === 0
+                        ? 'You not have any sheet.'
+                        : JSON.stringify(userRes.data.data[0].sheets, null, 4)
                     axios.post(payload.response_url, util.TextWithSettings(text))
                 } catch (err) {
-                    axios.post(payload.response_url, { text: 'has error, please try again!' })
+                    axios.post(payload.response_url, util.TextWithSettings('has error, please try again!!'))
                     log.error(err)
                 }
                 break
@@ -82,11 +84,11 @@ router.post('/', async (req, res) => {
                     }
 
                     api.dialog.open(dialog).catch(err => {
-                        axios.post(payload.response_url, { text: 'has error, please try again!!' })
+                        axios.post(payload.response_url, util.TextWithSettings('has error, please try again!!'))
                         log.error(err)
                     })
                 } catch (err) {
-                    axios.post(payload.response_url, { text: 'has error, please try again!!' })
+                    axios.post(payload.response_url, util.TextWithSettings('has error, please try again!!'))
                     log.error(err)
                 }
 
@@ -113,15 +115,16 @@ router.post('/', async (req, res) => {
                     }
 
                     api.dialog.open(dialog).catch(err => {
-                        axios.post(payload.response_url, { text: 'has error, please try again!!' })
+                        axios.post(payload.response_url, util.TextWithSettings('has error, please try again!!'))
                         log.error(err)
                     })
                 } catch (err) {
-                    axios.post(payload.response_url, { text: 'has error, please try again!!' })
+                    axios.post(payload.response_url, util.TextWithSettings('has error, please try again!!'))
                     log.error(err)
                 }
                 break
             default:
+                axios.post(payload.response_url, util.TextWithSettings('has error, please try again!!'))
                 break
         }
     } else if (payload.callback_id === 'add-sheet-id') {

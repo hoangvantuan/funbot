@@ -24,7 +24,7 @@ function devConfig() {
                 type: '@log4js-node/slack',
                 token: process.env.SLACK_ALERT_TOKEN,
                 channel_id: 'dev-alerts',
-                username: 'alerts',
+                username: 'api-alerts',
             },
         },
         categories: {
@@ -41,14 +41,14 @@ function prodConfig() {
         appenders: {
             everything: {
                 type: 'dateFile',
-                filename: '/funbot/logs/system.log',
+                filename: '/funbot/logs/api.log',
                 pattern: '-yyyy-MM-dd',
             },
             slack: {
                 type: '@log4js-node/slack',
                 token: process.env.SLACK_ALERT_TOKEN,
                 channel_id: 'prod-alerts',
-                username: 'alerts',
+                username: 'api-alerts',
             },
         },
         categories: {

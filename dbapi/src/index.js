@@ -1,9 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-
-if (!process.env.VERSION) {
-    require('dotenv').config({ path: '../../.env' })
-}
+const log = require('./log')
 
 const api = express()
 
@@ -20,5 +17,5 @@ api.use((req, res, next) => {
 })
 
 const server = api.listen(process.env.DBAPI_PORT || 8081, () => {
-    console.log(`Listening on port ' ${server.address().port}`)
+    log.info(`Listening on port ' ${server.address().port}`)
 })

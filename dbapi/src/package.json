@@ -11,6 +11,7 @@
   "author": "mdshun",
   "license": "ISC",
   "dependencies": {
+    "@log4js-node/slack": "^1.0.0",
     "body-parser": "^1.18.3",
     "dotenv": "^6.1.0",
     "eslint": "^5.7.0",

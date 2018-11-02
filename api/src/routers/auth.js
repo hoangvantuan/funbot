@@ -52,7 +52,7 @@ router.get('/google/redirected', (req, res) => {
                             db.SlackUser.update(query)
                                 .then(() => {
                                     log.info('new google token was generate for userid ', state.user_id)
-                                    res.send('ok ')
+                                    res.redirect(`https://slack.com/app_redirect?channel=${state.channel_id}`)
                                 })
                                 .catch(err => {
                                     log.error(err)
@@ -100,10 +100,11 @@ router.get('/slack/redirected', async (req, res) => {
             const team = await db.SlackTeam.get({
                 team_id: tokens.data.team_id,
             })
-
             // encode access token
             tokens.data.access_token = util.Encode(tokens.data.access_token)
             tokens.data.bot.bot_access_token = util.Encode(tokens.data.bot.bot_access_token)
+
+            log.debug(tokens.data)
 
             if (team.data && team.data.data.length > 0) {
                 await db.SlackTeam.update({
@@ -113,13 +114,13 @@ router.get('/slack/redirected', async (req, res) => {
 
                 log.info('app was reinstall for workspace', team.data.team_name)
 
-                res.redirect('https://slack.com/app_redirect?app=ADHDD3T9P')
+                res.redirect(`https://slack.com/app_redirect?team=${tokens.data.team_id}`)
             } else {
                 await db.SlackTeam.save(tokens.data)
 
-                log.info('app was install for workspace', team.data.team_name)
+                log.info('app was install for workspace', tokens.data.team_name)
 
-                res.redirect('https://slack.com/app_redirect?app=ADHDD3T9P')
+                res.redirect(`https://slack.com/app_redirect?team=${tokens.data.team_id}`)
             }
         }
     } catch (err) {
