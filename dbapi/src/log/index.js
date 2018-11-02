@@ -23,13 +23,13 @@ function devConfig() {
             slack: {
                 type: '@log4js-node/slack',
                 token: process.env.SLACK_ALERT_TOKEN,
-                channel_id: 'dev-alerts',
+                channel_id: 'dbapi-alerts',
                 username: 'db-api-alerts',
             },
         },
         categories: {
             default: {
-                appenders: ['console'],
+                appenders: ['console', 'slack'],
                 level: 'all',
             },
         },
@@ -47,7 +47,7 @@ function prodConfig() {
             slack: {
                 type: '@log4js-node/slack',
                 token: process.env.SLACK_ALERT_TOKEN,
-                channel_id: 'prod-alerts',
+                channel_id: 'dbapi-alerts',
                 username: 'db-api-alerts',
             },
         },
