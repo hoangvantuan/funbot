@@ -137,14 +137,15 @@ router.post('/', async (req, res) => {
         log.debug('add sheet id', sheetID)
 
         if (worker.isRunningJob(`^${sheetID}.*`)) {
-            axios.post(payload.response_url, util.TextWithRestartJob(`${payload.submission['sheet-id']} is running, you mean restart`))
+            axios.post(payload.response_url, util.TextWithRestartJob(`${payload.submission['sheet-id']} is running, you mean restart`, sheetID))
         } else {
             db.SlackUser.get({ user_id: payload.user.id })
                 .then(userRes => {
                     log.debug(userRes.data)
+                    log.debug('stoped sheetID', sheetID)
 
                     if (userRes.data.data[0].sheets.includes(sheetID)) {
-                        axios.post(payload.response_url, util.TextWithRestartJob(`${payload.submission['sheet-id']} was be add but stopped  you mean start`))
+                        axios.post(payload.response_url, util.TextWithRestartJob(`${payload.submission['sheet-id']} was be add but stopped  you mean start`, sheetID))
                     } else {
                         const newSheets = [...userRes.data.data[0].sheets, sheetID]
 
@@ -213,6 +214,21 @@ router.post('/', async (req, res) => {
                 log.error(err)
                 axios.post(payload.response_url, util.TextWithSettings(`Remove ${payload.submission['sheet-id']} error`))
             })
+    } else if (payload.callback_id === 'restart') {
+        if (payload.actions[0].value) {
+            log.debug(payload.actions[0].value)
+            worker.clearAllJobMatch(`^${payload.actions[0].value}.*`)
+            try {
+                const userRes = await db.SlackUser.get({ user_id: payload.user.id })
+
+                log.debug('restart sheet ', payload.actions[0].value, 'user', userRes.data.data[0])
+
+                worker.startCronUser(userRes.data.data[0], [payload.actions[0].value])
+            } catch (err) {
+                log.error(err)
+                axios.post(payload.response_url, util.TextWithSettings(`Start sheet ${payload.actions[0].value} error`))
+            }
+        }
     }
 })
 

@@ -96,7 +96,7 @@ module.exports.TextWithSettings = text => {
     }
 }
 
-module.exports.TextWithRestartJob = text => {
+module.exports.TextWithRestartJob = (text, value) => {
     return {
         text,
         attachments: [
@@ -110,7 +110,7 @@ module.exports.TextWithRestartJob = text => {
                         name: 'restart-job',
                         text: 'Restart',
                         type: 'button',
-                        value: 'restart-job',
+                        value,
                         style: 'primary',
                     },
                     {
