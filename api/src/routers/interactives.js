@@ -27,14 +27,15 @@ router.post('/', async (req, res) => {
             case 'list':
                 try {
                     const userRes = await db.SlackUser.get({
-                        user_id: req.body.user_id,
+                        user_id: payload.user.id,
                     })
 
                     log.debug(userRes.data)
 
-                    const text = !userRes.data.data[0] || !userRes.data.data[0].sheets || userRes.data.data[0].sheets.length === 0
-                        ? 'You not have any sheet.'
-                        : JSON.stringify(userRes.data.data[0].sheets, null, 4)
+                    const text =
+                        !userRes.data.data[0] || !userRes.data.data[0].sheets || userRes.data.data[0].sheets.length === 0
+                            ? 'You not have any sheet.'
+                            : JSON.stringify(userRes.data.data[0].sheets, null, 4)
                     axios.post(payload.response_url, util.TextWithSettings(text))
                 } catch (err) {
                     axios.post(payload.response_url, util.TextWithSettings('has error, please try again!!'))
@@ -44,7 +45,7 @@ router.post('/', async (req, res) => {
             case 'remove':
                 try {
                     const userRes = await db.SlackUser.get({
-                        user_id: req.body.user_id,
+                        user_id: payload.user.id,
                     })
 
                     log.debug(userRes.data)
