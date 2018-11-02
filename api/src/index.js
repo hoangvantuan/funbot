@@ -15,7 +15,7 @@ api.use((req, res) => {
     res.status(404).send('Something wrong')
 })
 
-api.listen(process.env.API_PORT || 8080, '172.0.0.1')
+api.listen(process.env.API_PORT || 8080, '172.31.33.216')
 
 // starting worker
 const worker = require('./worker')
