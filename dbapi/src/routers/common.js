@@ -24,7 +24,7 @@ Common.prototype.use = function(router) {
 
         team.save((err, result) => {
             if (err) {
-                log.debug(err)
+                log.error(err)
                 res.status(400).send(wrapResult(err))
             } else {
                 res.send(wrapResult(result, true))
@@ -41,7 +41,7 @@ Common.prototype.use = function(router) {
             { runValidators: true, context: 'query' },
             (err, result) => {
                 if (err) {
-                    log.debug(err)
+                    log.error(err)
                     res.status(400).send(wrapResult(err))
                 }
 
@@ -55,7 +55,7 @@ Common.prototype.use = function(router) {
 
         model.find(req.body, (err, result) => {
             if (err) {
-                log.debug(err)
+                log.error(err)
                 res.status(400).send(wrapResult(err))
             }
 
@@ -68,7 +68,7 @@ Common.prototype.use = function(router) {
 
         model.deleteMany(req.body, (err, result) => {
             if (err) {
-                log.debug(err)
+                log.error(err)
                 res.status(400).send(wrapResult(err))
             }
 

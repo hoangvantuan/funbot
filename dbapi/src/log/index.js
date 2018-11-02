@@ -30,7 +30,7 @@ function devConfig() {
         categories: {
             default: {
                 appenders: ['console'],
-                level: 'debug',
+                level: 'all',
             },
         },
     }
@@ -54,7 +54,7 @@ function prodConfig() {
         categories: {
             default: {
                 appenders: ['slack', 'everything'],
-                level: 'debug',
+                level: 'all',
             },
         },
     }
