@@ -15,11 +15,13 @@ class SlackAuth {
         const tokenURL = process.env.SLACK_TOKEN_URI
         const clientID = process.env.SLACK_CLIENT_ID
         const clientSecret = process.env.SLACK_CLIENT_SECRET
+        const redirectedURI = process.env.SLACK_REDIRECT_URI
 
         const options = {
             client_id: clientID,
             client_secret: clientSecret,
             code,
+            redirect_uri: redirectedURI,
         }
 
         return axios.post(tokenURL, qs.stringify(options))
