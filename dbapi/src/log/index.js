@@ -54,7 +54,7 @@ function prodConfig() {
         categories: {
             default: {
                 appenders: ['slack', 'everything'],
-                level: 'info',
+                level: 'debug',
             },
         },
     }
