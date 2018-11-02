@@ -2,3 +2,4 @@
 *.pem
 
 **/package-lock.json
+*.env
