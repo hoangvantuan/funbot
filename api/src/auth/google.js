@@ -10,6 +10,7 @@ class GoogleAuth {
             access_type: 'offline',
             scope: process.env.GOOGLE_SCOPES,
             state: util.Encode(JSON.stringify(payload)),
+            prompt: 'consent',
         })
     }
 
