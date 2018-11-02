@@ -4,6 +4,8 @@ const log = require('./log')
 
 const api = express()
 
+api.use(express.static('public'))
+
 api.use(bodyParser.urlencoded({ extended: true }))
 api.use(bodyParser.json())
 
