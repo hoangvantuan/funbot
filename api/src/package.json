@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./index.js",
+    "start": "forever ./index.js"
   },
   "repository": {
     "type": "git",
@@ -17,10 +19,20 @@
   },
   "homepage": "https://github.com/mdshun/funbot#readme",
   "dependencies": {
+    "@log4js-node/slack": "^1.0.0",
+    "aes-js": "^3.1.1",
     "axios": "^0.18.0",
-    "botkit": "^0.6.16",
+    "body-parser": "^1.18.3",
     "cron-job-manager": "^2.1.1",
+    "dotenv": "^6.1.0",
+    "eslint": "^5.7.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "express": "^4.16.4",
+    "forever": "^0.15.3",
     "googleapis": "^27.0.0",
-    "simsimi": "^2.0.2"
+    "log4js": "^3.0.6",
+    "nodemon": "^1.18.4",
+    "slack": "^11.0.1"
   }
 }
