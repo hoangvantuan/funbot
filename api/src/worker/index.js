@@ -79,7 +79,7 @@ class Worker {
             const team = await db.SlackTeam.get({ _id: user.slack_team })
 
             if (team.data.data[0] !== 1) {
-                log.debug('can not find team with user', user)
+                log.debug('can not find team with user', team.data, user)
                 return
             }
 
