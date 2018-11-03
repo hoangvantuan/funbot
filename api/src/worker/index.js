@@ -76,7 +76,7 @@ class Worker {
 
             const auth = await GoogkeAuth.getOauth2Client(googleTokenID)
 
-            const team = await db.SlackTeam.get({ _id: user.team_id })
+            const team = await db.SlackTeam.get({ _id: user.slack_team })
 
             if (team.data.data[0] !== 1) {
                 log.debug('can not find team with user', user)
