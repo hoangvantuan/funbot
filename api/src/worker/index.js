@@ -78,6 +78,8 @@ class Worker {
 
             const team = await db.SlackTeam.get({ _id: user.team_id })
 
+            log.debug('get team from user', team, user)
+
             const cronsheets = sheets && sheets.length > 0 ? sheets : user.sheets
 
             cronsheets.forEach(sheet => {
