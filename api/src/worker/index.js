@@ -78,14 +78,17 @@ class Worker {
 
             const team = await db.SlackTeam.get({ _id: user.team_id })
 
-            log.debug('get team from user', team, user)
+            if (team.data.data[0] !== 1) {
+                log.debug('can not find team with id', user.team_id)
+                return
+            }
 
             const cronsheets = sheets && sheets.length > 0 ? sheets : user.sheets
 
             cronsheets.forEach(sheet => {
                 log.debug('staring cron sheet ', sheet)
                 log.info('staring cron sheet ', sheet)
-                this.startCronSheet(team, sheet, auth)
+                this.startCronSheet(team.data.data[0], sheet, auth)
             })
         }
     }
