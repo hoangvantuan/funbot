@@ -2,11 +2,11 @@ const fs = require('fs')
 const path = require('path')
 const mongoose = require('mongoose')
 
-const uri = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${
-    process.env.MONGO_INITDB_ROOT_PASSWORD
-}@${process.env.DB_HOST}:${process.env.BD_PORT}/${
-    process.env.DB_NAME
-}?authSource=admin`
+const uri = `mongodb://${process.env.MONGO_INITDB_ROOT_USERNAME}:${process.env.MONGO_INITDB_ROOT_PASSWORD}@${
+    process.env.DB_HOST
+}:${process.env.DB_PORT}/${process.env.DB_NAME}?authSource=admin`
+
+console.log(('connect to ', uri))
 
 mongoose.connect(
     uri,

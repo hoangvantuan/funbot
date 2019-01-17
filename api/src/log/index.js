@@ -23,8 +23,8 @@ function devConfig() {
             slack: {
                 type: '@log4js-node/slack',
                 token: process.env.SLACK_ALERT_TOKEN,
-                channel_id: 'dev-alerts',
-                username: 'api-alerts',
+                channel_id: 'reminder-log',
+                username: 'app-log',
             },
         },
         categories: {

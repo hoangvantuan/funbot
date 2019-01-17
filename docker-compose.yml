@@ -1,0 +1,35 @@
+version: '3.0'
+
+services:
+  db:
+    image: mongo
+    volumes:
+      - db_data:/data/db
+    restart: always
+    ports:
+      - '27017:27017'
+
+  dbapi:
+    build:
+      context: ./dbapi
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - '8081:8081'
+    restart: always
+    env_file: prod.env
+
+  app:
+    build:
+      context: ./dbapi
+      dockerfile: Dockerfile
+    depends_on:
+      - dbapi
+    ports:
+      - '8080:80'
+    restart: always
+    env_file: prod.env
+
+volumes:
+  db_data: {}
